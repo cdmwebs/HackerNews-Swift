@@ -7,11 +7,17 @@
 //
 
 import UIKit
+import Firebase
 
 class ItemsController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     weak var delegate: ItemsControllerDelegate?
-    var stories: [Story] = []
+    
     private var tableView: UITableView?
+    private var databaseURL =  "https://hacker-news.firebaseio.com/"
+    private var stories: [Story] = []
+    private var database: DatabaseReference!
+    private var databaseHandle: DatabaseHandle!
+    private var concurrentQueue: DispatchQueue!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +26,13 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
         self.view.backgroundColor = .white
         
         setupTableView()
+        setupFirebase()
+        startObservingDatabase()
+    }
+    
+    private func setupFirebase() {
+        database = Database.database(url: databaseURL).reference(withPath: "v0")
+        concurrentQueue = DispatchQueue.init(label: "concurrentQueue", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil)
     }
     
     private func setupTableView() {
@@ -56,6 +69,42 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
+    }
+
+    // MARK: - Network Requests
+
+    func startObservingDatabase() {
+        concurrentQueue.async {
+            let query = self.database.child("topstories").queryLimited(toFirst: 50)
+            
+            self.databaseHandle = query.observe(.value, with: { (snapshot) in
+                for child in snapshot.children {
+                    let childSnapshot = child as! DataSnapshot
+                    guard let storyId = childSnapshot.value as? Int else { return }
+                    
+                    self.database.child("item").child("\(storyId)").observeSingleEvent(of: .value, with: { (storySnapshot) in
+                        let item = Story(snapshot: storySnapshot)
+                        
+                        if let storyIndex = self.stories.firstIndex(where: { $0.id == item.id }) {
+                            self.stories[storyIndex] = item
+                        } else {
+                            self.stories.append(item)
+                        }
+
+                        self.tableView?.reloadData()
+                        self.title = "\(self.stories.count) Stories"
+                    })
+                }
+            }) { (error) in
+                print(error)
+            }
+        }
+    }
+
+    // MARK: - Cleanup
+
+    deinit {
+        database.child("topstories").removeObserver(withHandle: databaseHandle)
     }
 }
 

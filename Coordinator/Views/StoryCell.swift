@@ -42,10 +42,10 @@ class StoryCell: UITableViewCell {
                 .localizedString(from: (story.points) as NSNumber, number: .decimal)
             
             titleLabel.attributedText = titleText
-            domainLabel.text = "Ask HN | \(formattedPoints) pts | \(story.by) | 10h"
+            domainLabel.text = "\(story.type) | \(formattedPoints) pts | \(story.by) | \(story.postedAt)"
             
             let formattedText = NumberFormatter
-                .localizedString(from: (story.commentsCount) as NSNumber, number: .decimal)
+                .localizedString(from: (story.kids.count) as NSNumber, number: .decimal)
             commentsCountLabel.text = formattedText
         }
     }
