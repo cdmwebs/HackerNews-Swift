@@ -9,15 +9,18 @@
 import UIKit
 import Firebase
 
-class ItemsController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class ItemsController: UIViewController {
     weak var delegate: ItemsControllerDelegate?
     
-    private var tableView: UITableView?
     private var databaseURL =  "https://hacker-news.firebaseio.com/"
-    private var stories: [Story] = []
     private var database: DatabaseReference!
     private var databaseHandle: DatabaseHandle!
     private var concurrentQueue: DispatchQueue!
+    
+    private var stories: [Story] = []
+    
+    private var tableView: UITableView = UITableView()
+    private let cellIdentifier = "StoryCell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,41 +39,26 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     private func setupTableView() {
-        tableView = UITableView(frame: view.bounds, style: .plain)
-        tableView?.translatesAutoresizingMaskIntoConstraints = false
-        tableView?.delegate = self
-        tableView?.dataSource = self
-        tableView?.allowsSelection = false
-        tableView?.rowHeight = UITableView.automaticDimension
-        tableView?.estimatedRowHeight = 60
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.allowsSelection = false
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
         
-        let nib = UINib.init(nibName: "StoryCell", bundle: nil)
-        tableView?.register(nib, forCellReuseIdentifier: "cell")
+        let nib = UINib.init(nibName: cellIdentifier, bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: cellIdentifier)
         
-        view.addSubview(tableView!)
+        view.addSubview(tableView)
         
-        tableView?.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        tableView?.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        tableView?.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        tableView?.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        NSLayoutConstraint.activate([
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let rowNumber = indexPath.row
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! StoryCell
-        cell.story = stories[rowNumber]
-        cell.delegate = self
-        return cell
-    }
-
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.stories.count
-    }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-
     // MARK: - Network Requests
 
     func startObservingDatabase() {
@@ -91,7 +79,7 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
                             self.stories.append(item)
                         }
 
-                        self.tableView?.reloadData()
+                        self.tableView.reloadData()
                         self.title = "\(self.stories.count) Stories"
                     })
                 }
@@ -105,6 +93,24 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
 
     deinit {
         database.child("topstories").removeObserver(withHandle: databaseHandle)
+    }
+}
+
+extension ItemsController: UITableViewDataSource, UITableViewDelegate {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let rowNumber = indexPath.row
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! StoryCell
+        cell.story = stories[rowNumber]
+        cell.delegate = self
+        return cell
+    }
+
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return self.stories.count
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
     }
 }
 

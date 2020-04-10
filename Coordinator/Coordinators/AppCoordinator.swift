@@ -9,7 +9,7 @@
 import UIKit
 import SafariServices
 
-class AppCoordinator: ItemsControllerDelegate {
+class AppCoordinator {
     var navController: UINavigationController?
     
     let barTintColor: UIColor = UIColor(red: 1.0, green: 0.4, blue: 0, alpha: 1.0)
@@ -26,11 +26,15 @@ class AppCoordinator: ItemsControllerDelegate {
             .foregroundColor: barTextColor
         ]
     }
-    
+}
+
+extension AppCoordinator: ItemsControllerDelegate {
     func loadStory(story: Story) {
         let url = URL(string: story.url)!
         let vc = SFSafariViewController(url: url)
+        
         navController?.present(vc, animated: true, completion: nil)
+        
         vc.preferredBarTintColor = barTintColor
         vc.preferredControlTintColor = barTextColor
     }
@@ -38,7 +42,9 @@ class AppCoordinator: ItemsControllerDelegate {
     func loadComments(story: Story) {
         let url = URL(string: "https://news.ycombinator.com/item?id=\(story.id)")!
         let vc = SFSafariViewController(url: url)
+        
         navController?.present(vc, animated: true, completion: nil)
+        
         vc.preferredBarTintColor = barTintColor
         vc.preferredControlTintColor = barTextColor
     }
