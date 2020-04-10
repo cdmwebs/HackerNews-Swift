@@ -13,11 +13,15 @@ class Story {
     var commentsCount: Int = 1256
     var domain: String = "www.example.com"
     var title: String = ""
+    var by: String = ""
+    var points: Int = 0
     
-    init(ID: Int, commentsCount: Int, domain: String?, title: String) {
+    init(ID: Int, commentsCount: Int, domain: String?, title: String, by: String?, points: Int) {
         self.ID = ID
         self.commentsCount = commentsCount
         self.domain = domain ?? ""
         self.title = title
+        self.by = by ?? ""
+        self.points = points
     }
 }

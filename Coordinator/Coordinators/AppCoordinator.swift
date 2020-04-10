@@ -12,11 +12,11 @@ import SafariServices
 class AppCoordinator: ItemsControllerDelegate {
     var navController: UINavigationController?
     var stories: [Story] = [
-        Story(ID: 1, commentsCount: 255, domain: "www.example.com", title: "Example"),
-        Story(ID: 2, commentsCount: 25, domain: "www.duckduckgo.com", title: "Duck Duck Go"),
-        Story(ID: 3, commentsCount: 1255, domain: "www.knowndecimal.com", title: "Known Decimal"),
-        Story(ID: 4, commentsCount: 55, domain: "www.homebuyer.ai", title: "Homebuyer"),
-        Story(ID: 5, commentsCount: 5, domain: "news.ycombinator.com", title: "Hacker News"),
+        Story(ID: 1, commentsCount: 255, domain: "www.example.com", title: "Example of a really long, really boring title that should span multiple lines.", by: "cdmwebs", points: 122),
+        Story(ID: 2, commentsCount: 25, domain: "www.duckduckgo.com", title: "Duck Duck Go", by: "anonymous", points: 1),
+        Story(ID: 3, commentsCount: 125335, domain: "www.knowndecimal.com", title: "Known Decimal", by: "user321", points: 255),
+        Story(ID: 4, commentsCount: 55, domain: "www.homebuyer.ai", title: "Homebuyer", by: "jack", points: 1250),
+        Story(ID: 5, commentsCount: 5, domain: "news.ycombinator.com", title: "Hacker News", by: "patio11", points: 222),
     ]
     
     let barTintColor: UIColor = UIColor(red: 1.0, green: 0.4, blue: 0, alpha: 1.0)

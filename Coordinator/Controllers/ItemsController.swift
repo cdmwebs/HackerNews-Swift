@@ -16,7 +16,7 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.title = "List of Stuff"
+        self.title = "Hacker News"
         self.view.backgroundColor = .white
         
         setupTableView()
@@ -24,12 +24,15 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     private func setupTableView() {
         tableView = UITableView(frame: view.bounds, style: .plain)
+        tableView?.translatesAutoresizingMaskIntoConstraints = false
         tableView?.delegate = self
         tableView?.dataSource = self
         tableView?.allowsSelection = false
         tableView?.rowHeight = UITableView.automaticDimension
         tableView?.estimatedRowHeight = 60
-        tableView?.register(TableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        let nib = UINib.init(nibName: "StoryCell", bundle: nil)
+        tableView?.register(nib, forCellReuseIdentifier: "cell")
         
         view.addSubview(tableView!)
         
@@ -41,7 +44,7 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let rowNumber = indexPath.row
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! StoryCell
         cell.story = stories[rowNumber]
         cell.delegate = self
         return cell
@@ -56,7 +59,7 @@ class ItemsController: UIViewController, UITableViewDataSource, UITableViewDeleg
     }
 }
 
-extension ItemsController: TableViewCellDelegate {
+extension ItemsController: StoryCellDelegate {
     func storyTapped(story: Story) {
         delegate?.loadStory(story: story)
     }
