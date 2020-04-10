@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F1A0F882440D45000C694CC /* DetailController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1A0F862440D45000C694CC /* DetailController.swift */; };
+		9F1A0F892440D45000C694CC /* DetailController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F1A0F872440D45000C694CC /* DetailController.xib */; };
+		9F1A0F8E24411FDA00C694CC /* DetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F1A0F8C24411FDA00C694CC /* DetailCell.swift */; };
+		9F1A0F8F24411FDA00C694CC /* DetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F1A0F8D24411FDA00C694CC /* DetailCell.xib */; };
 		9F32A197243E976600AFCB2B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32A196243E976600AFCB2B /* AppDelegate.swift */; };
 		9F32A1A0243E976A00AFCB2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F32A19F243E976A00AFCB2B /* Assets.xcassets */; };
 		9F32A1A3243E976A00AFCB2B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F32A1A1243E976A00AFCB2B /* LaunchScreen.storyboard */; };
@@ -22,6 +26,10 @@
 
 /* Begin PBXFileReference section */
 		38D945B639A22BD22977C61B /* Pods-Coordinator.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coordinator.debug.xcconfig"; path = "Target Support Files/Pods-Coordinator/Pods-Coordinator.debug.xcconfig"; sourceTree = "<group>"; };
+		9F1A0F862440D45000C694CC /* DetailController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailController.swift; sourceTree = "<group>"; };
+		9F1A0F872440D45000C694CC /* DetailController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailController.xib; sourceTree = "<group>"; };
+		9F1A0F8C24411FDA00C694CC /* DetailCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailCell.swift; sourceTree = "<group>"; };
+		9F1A0F8D24411FDA00C694CC /* DetailCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailCell.xib; sourceTree = "<group>"; };
 		9F32A193243E976600AFCB2B /* Coordinator.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Coordinator.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F32A196243E976600AFCB2B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F32A19F243E976A00AFCB2B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -106,6 +114,8 @@
 			isa = PBXGroup;
 			children = (
 				9F32A1AA243E9B7A00AFCB2B /* ItemsController.swift */,
+				9F1A0F862440D45000C694CC /* DetailController.swift */,
+				9F1A0F872440D45000C694CC /* DetailController.xib */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -115,6 +125,8 @@
 			children = (
 				9F32A1BC243FFC3B00AFCB2B /* StoryCell.swift */,
 				9F32A1BD243FFC3B00AFCB2B /* StoryCell.xib */,
+				9F1A0F8C24411FDA00C694CC /* DetailCell.swift */,
+				9F1A0F8D24411FDA00C694CC /* DetailCell.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -206,6 +218,8 @@
 				9F32A1A3243E976A00AFCB2B /* LaunchScreen.storyboard in Resources */,
 				9F791EE5244013B000FCC44A /* GoogleService-Info.plist in Resources */,
 				9F32A1BF243FFC3B00AFCB2B /* StoryCell.xib in Resources */,
+				9F1A0F892440D45000C694CC /* DetailController.xib in Resources */,
+				9F1A0F8F24411FDA00C694CC /* DetailCell.xib in Resources */,
 				9F32A1A0243E976A00AFCB2B /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,10 +274,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				9F32A1AB243E9B7A00AFCB2B /* ItemsController.swift in Sources */,
+				9F1A0F882440D45000C694CC /* DetailController.swift in Sources */,
 				9F791EE32440131200FCC44A /* Comment.swift in Sources */,
 				9F32A1B5243ED4DB00AFCB2B /* AppCoordinator.swift in Sources */,
 				9F32A197243E976600AFCB2B /* AppDelegate.swift in Sources */,
 				9F32A1B2243ED45100AFCB2B /* Story.swift in Sources */,
+				9F1A0F8E24411FDA00C694CC /* DetailCell.swift in Sources */,
 				9F32A1BE243FFC3B00AFCB2B /* StoryCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

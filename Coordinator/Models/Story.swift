@@ -20,6 +20,7 @@ struct Story {
     var timestamp: TimeInterval = 0
     var by: String = ""
     var type: String = ""
+    var text: String = ""
     
     var domain: String {
         get {
@@ -38,6 +39,7 @@ struct Story {
         timestamp = data["time"] as? TimeInterval ?? 0
         by = data["by"] as? String ?? ""
         type = data["type"] as? String ?? ""
+        text = data["text"] as? String ?? ""
         
         ref = snapshot.ref
     }

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,10 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         coordinator = AppCoordinator()
         coordinator?.start()
         
-        window?.rootViewController = coordinator?.navController
+        window?.rootViewController = coordinator?.splitController
         window?.makeKeyAndVisible()
-        
-        FirebaseApp.configure()
         
         return true
     }

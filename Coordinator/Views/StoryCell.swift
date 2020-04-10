@@ -41,36 +41,24 @@ class StoryCell: UITableViewCell {
             let formattedPoints = NumberFormatter
                 .localizedString(from: (story.points) as NSNumber, number: .decimal)
             
-            titleLabel.attributedText = titleText
-            domainLabel.text = "\(story.type) | \(formattedPoints) pts | \(story.by) | \(story.postedAt)"
-            
-            let formattedText = NumberFormatter
+            let formattedCommentCount = NumberFormatter
                 .localizedString(from: (story.kids.count) as NSNumber, number: .decimal)
-            commentsCountLabel.text = formattedText
+            
+            titleLabel.attributedText = titleText
+            storyTypeLabel.text = story.type
+            pointsLabel.text = formattedPoints
+            postedAtLabel.text = story.postedAt
+            postedByLabel.text = story.by
+            commentsCountLabel.text = formattedCommentCount
         }
     }
     
-    @IBOutlet weak var leftView: UIView!
-    @IBOutlet weak var rightView: UIView!
-    
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var domainLabel: UILabel!
+    @IBOutlet weak var storyTypeLabel: UILabel!
+    @IBOutlet weak var pointsLabel: UILabel!
+    @IBOutlet weak var postedAtLabel: UILabel!
+    @IBOutlet weak var postedByLabel: UILabel!
     @IBOutlet weak var commentsCountLabel: UILabel!
-    
-    override func awakeFromNib() {
-       super.awakeFromNib()
-       bindActions()
-    }
-    
-    private func bindActions() {
-        leftView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(storyTapped(sender:)))
-        )
-        
-        rightView.addGestureRecognizer(
-            UITapGestureRecognizer(target: self, action: #selector(commentsTapped(sender:)))
-        )
-    }
     
     @objc func storyTapped(sender: Any?) {
         delegate?.storyTapped(story: story!)
