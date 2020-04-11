@@ -8,21 +8,42 @@
 
 import UIKit
 
+protocol ItemsControllerDelegate : class {
+    func loadStory(story: Story)
+    func loadComments(story: Story)
+}
+
 class ItemsController: UIViewController {
     weak var itemsDelegate: AppCoordinator?
     
     var stories: [Story] = []
     
-    var tableView: UITableView = UITableView()
+    private var tableView: UITableView = UITableView()
     private let cellIdentifier = "StoryCell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.title = "Hacker News"
         self.view.backgroundColor = .white
         
         setupTableView()
+    }
+    
+    func addStory(_ story: Story) {
+        stories.append(story)
+        tableView.performBatchUpdates({
+            tableView.insertRows(at: [IndexPath(row: stories.count - 1, section: 0)], with: .automatic)
+        }, completion: nil)
+    }
+    
+    func updateStory(_ story: Story) {
+        guard let storyIndex = self.stories.firstIndex(where: { $0.id == story.id }) else { return }
+        stories[storyIndex] = story
+        
+        tableView.performBatchUpdates({
+            tableView.reloadRows(at: [IndexPath(row: storyIndex, section: 0)], with: .automatic)
+        }, completion: nil)
     }
     
     private func setupTableView() {
@@ -45,16 +66,6 @@ class ItemsController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
-    func addStory(_ story: Story) {
-        stories.append(story)
-    }
-    
-    func updateStory(_ story: Story) {
-        if let storyIndex = self.stories.firstIndex(where: { $0.id == story.id }) {
-            stories[storyIndex] = story
-         }
-    }
 }
 
 extension ItemsController: UITableViewDataSource, UITableViewDelegate {
@@ -64,7 +75,7 @@ extension ItemsController: UITableViewDataSource, UITableViewDelegate {
         cell.story = stories[rowNumber]
         return cell
     }
-
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.stories.count
     }

@@ -10,6 +10,7 @@ import UIKit
 
 class DetailController: UIViewController {
     private let commentCellIdentifier = "CommentCell"
+    private let headerCellIdentifier = "StoryCell"
     
     var story: Story?
     var comments: [Comment] = []
@@ -17,6 +18,10 @@ class DetailController: UIViewController {
     @IBOutlet var tableView: UITableView!
     
     override func viewDidLoad() {
+        configureTableview()
+    }
+    
+    func configureTableview() {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.rowHeight = UITableView.automaticDimension
@@ -24,7 +29,9 @@ class DetailController: UIViewController {
         
         let nib = UINib.init(nibName: commentCellIdentifier, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: commentCellIdentifier)
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TitleCell")
+        
+        let headerNib = UINib.init(nibName: headerCellIdentifier, bundle: nil)
+        tableView.register(headerNib, forCellReuseIdentifier: headerCellIdentifier)
     }
     
     func setStory(_ story:Story) {
@@ -48,6 +55,46 @@ class DetailController: UIViewController {
             self.tableView.reloadData()
         }
     }
+}
+
+extension DetailController: UITableViewDataSource, UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 2
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return section == 1 ? comments.count : 1
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return section == 1 ? "Comments" : ""
+    }
+    
+    func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
+        return indexPath.section * 10
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            let cell = tableView.dequeueReusableCell(withIdentifier: headerCellIdentifier) as! StoryCell
+            guard let story = story else { return cell }
+            
+            cell.story = story
+            cell.commentCount = comments.count
+            cell.showText = true
+            
+            return cell
+        }
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: commentCellIdentifier) as! CommentCell
+        let comment = comments[indexPath.row]
+        
+        cell.commentLabel.attributedText = formattedText(comment.text)
+        cell.commentIdLabel.text = "\(comment.id)"
+        cell.parentLabel.text = "\(comment.parent!)"
+        
+        return cell
+    }
     
     func formattedText(_ text: String) -> NSAttributedString {
         var attributedText: NSAttributedString?
@@ -61,56 +108,5 @@ class DetailController: UIViewController {
         
         guard attributedText != nil else { return NSAttributedString() }
         return attributedText!
-    }
-}
-
-extension DetailController: UITableViewDataSource, UITableViewDelegate {
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return story?.text != "" ? 2 : 1
-        } else {
-            return comments.count
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return "Story"
-        } else {
-            return "Comments"
-        }
-    }
-    
-    func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
-        return indexPath.section * 10
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "TitleCell")!
-            cell.textLabel?.numberOfLines = 0
-
-            if indexPath.row == 0 {
-                cell.textLabel?.text = story?.title ?? "Title"
-                cell.textLabel?.font = UIFont.systemFont(ofSize: 16)
-            } else {
-                cell.textLabel?.attributedText = formattedText(story?.text ?? "")
-            }
-            
-            return cell
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: commentCellIdentifier) as! CommentCell
-        let comment = comments[indexPath.row]
-        
-        cell.commentLabel.attributedText = formattedText(comment.text)
-        cell.commentIdLabel.text = "\(comment.id)"
-        cell.parentLabel.text = "\(comment.parent)"
-        
-        return cell
     }
 }

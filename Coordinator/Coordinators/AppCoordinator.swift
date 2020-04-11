@@ -28,7 +28,7 @@ class AppCoordinator {
     
     func start() {
         setupFirebase()
-        startObservingDatabase()
+        startObservingDatabase(type: "askstories")
         
         itemsController = ItemsController()
         itemsController?.itemsDelegate = self
@@ -63,41 +63,33 @@ class AppCoordinator {
     
     // MARK: - Network Requests
 
-    private func startObservingDatabase() {
-        let topStoriesRef = database.child("topstories")
+    private func startObservingDatabase(type: String = "topstories") {
+        let topStoriesRef = database.child(type)
 
         topStoriesRef.observe(.childAdded, with: { (snapshot) in
-            self.storiesGroup.enter()
-            self.fetchStory(snapshot: snapshot, event: "added")
+            guard let storyId = snapshot.value as? Int else { return }
+            let storyPath = String(storyId)
             
-            self.storiesGroup.notify(queue: .main) {
-                print("stories fetched. reloading.")
-                self.itemsController?.tableView.reloadData()
-            }
+            self.database.child("item").child(storyPath).observeSingleEvent(of: .value, with: { (storySnapshot) in
+                let story = Story(snapshot: storySnapshot)
+                self.itemsController?.addStory(story)
+            })
         })
         
         topStoriesRef.observe(.childChanged, with: { (snapshot) in
-            self.fetchStory(snapshot: snapshot, event: "changed")
-        })
-    }
-    
-    private func fetchStory(snapshot: DataSnapshot, event: String) {
-        let storyId = snapshot.value as! Int
-        
-        self.database.child("item").child("\(storyId)").observeSingleEvent(of: .value, with: { (storySnapshot) in
-            let story = Story(snapshot: storySnapshot)
+            guard let storyId = snapshot.value as? Int else { return }
+            let storyPath = String(storyId)
             
-            if event == "added" {
-                self.itemsController?.addStory(story)
-                self.storiesGroup.leave()
-            } else {
+            self.database.child("item").child(storyPath).observeSingleEvent(of: .value, with: { (storySnapshot) in
+                let story = Story(snapshot: storySnapshot)
                 self.itemsController?.updateStory(story)
-            }
+            })
         })
     }
     
     private func fetchComments(commentIds: [Int]) {
         commentsGroup.enter()
+        
         for commentId in commentIds {
             commentsGroup.enter()
             self.database.child("item").child("\(commentId)").observeSingleEvent(of: .value, with: { (commentSnapshot) in
@@ -128,11 +120,15 @@ extension AppCoordinator: ItemsControllerDelegate {
     func loadStory(story: Story) {}
     
     func loadComments(story: Story) {
-        fetchComments(commentIds: story.kids)
         detailController?.setStory(story)
+        fetchComments(commentIds: story.kids)
         
         if splitController?.isCollapsed == true {
             splitController?.showDetailViewController(detailController!, sender: self)
+            DispatchQueue.main.async {
+                self.detailController?.tableView.setContentOffset(.zero, animated: true)
+                self.detailController?.tableView.reloadData()
+             }
         }
         
         self.commentsGroup.notify(queue: .main) {
@@ -141,7 +137,3 @@ extension AppCoordinator: ItemsControllerDelegate {
     }
 }
 
-protocol ItemsControllerDelegate : class {
-    func loadStory(story: Story)
-    func loadComments(story: Story)
-}

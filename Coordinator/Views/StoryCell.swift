@@ -16,6 +16,23 @@ protocol StoryCellDelegate : class {
 class StoryCell: UITableViewCell {
     var delegate: StoryCellDelegate?
     
+    var showText: Bool = false {
+        didSet {
+            guard showText == true  else { return }
+            
+            bodyLabel.attributedText = formattedText(story?.text ?? "")
+        }
+    }
+    
+    var commentCount: Int = 0 {
+        didSet {
+            let formattedCommentCount = NumberFormatter
+                .localizedString(from: (commentCount) as NSNumber, number: .decimal)
+            
+            commentsCountLabel.text = formattedCommentCount
+        }
+    }
+    
     var titleText: NSAttributedString {
         guard let story = story else { return NSAttributedString(string: "") }
         
@@ -50,10 +67,15 @@ class StoryCell: UITableViewCell {
             postedAtLabel.text = story.postedAt
             postedByLabel.text = story.by
             commentsCountLabel.text = formattedCommentCount
+            
+            if showText == true {
+                bodyLabel.attributedText = formattedText(story.text)
+            }
         }
     }
     
     @IBOutlet weak var titleLabel: UILabel!
+    @IBOutlet weak var bodyLabel: UILabel!
     @IBOutlet weak var storyTypeLabel: UILabel!
     @IBOutlet weak var pointsLabel: UILabel!
     @IBOutlet weak var postedAtLabel: UILabel!
@@ -66,5 +88,19 @@ class StoryCell: UITableViewCell {
     
     @objc func commentsTapped(sender: Any?) {
         delegate?.commentsTapped(story: story!)
+    }
+    
+    func formattedText(_ text: String) -> NSAttributedString {
+        var attributedText: NSAttributedString?
+        
+        let formattedBody = String(format: "<style>body { font-family: '-apple-system', 'HelveticaNeue'; font-size: \(UIFont.systemFontSize) }</style><body><span>%@</span></body>", text)
+
+        attributedText = try? NSAttributedString(
+            data: formattedBody.data(using: .utf8, allowLossyConversion: false)!,
+            options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue],
+            documentAttributes: nil)
+        
+        guard attributedText != nil else { return NSAttributedString() }
+        return attributedText!
     }
 }
