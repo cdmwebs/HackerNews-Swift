@@ -9,7 +9,7 @@
 import UIKit
 
 class DetailController: UIViewController {
-    private let cellIdentifier = "DetailCell"
+    private let commentCellIdentifier = "CommentCell"
     
     var story: Story?
     var comments: [Comment] = []
@@ -22,8 +22,8 @@ class DetailController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         
-        let nib = UINib.init(nibName: cellIdentifier, bundle: nil)
-        tableView.register(nib, forCellReuseIdentifier: cellIdentifier)
+        let nib = UINib.init(nibName: commentCellIdentifier, bundle: nil)
+        tableView.register(nib, forCellReuseIdentifier: commentCellIdentifier)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "TitleCell")
     }
     
@@ -104,7 +104,7 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
             return cell
         }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier) as! DetailCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: commentCellIdentifier) as! CommentCell
         let comment = comments[indexPath.row]
         
         cell.commentLabel.attributedText = formattedText(comment.text)
