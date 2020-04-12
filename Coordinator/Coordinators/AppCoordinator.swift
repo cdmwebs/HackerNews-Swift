@@ -78,7 +78,7 @@ class AppCoordinator {
     
     // MARK: - Network Requests
 
-    private func loadInitialItems(type: StoryType = .ask) {
+    private func loadInitialItems(type: StoryType = .top) {
         let topStoriesRef = database.child(type.rawValue)
         let itemsRef = database.child("item")
         
