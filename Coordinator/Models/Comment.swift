@@ -9,28 +9,79 @@
 import Foundation
 import Firebase
 
-struct Comment {
-    var by: String?
+class Comment: CustomStringConvertible {
+    var by: String = ""
     var id: Int = 0
-    var kids: [Int] = []
+    var replies: [Comment] = []
     var parent: Int?
+    var story: Story?
     var text: String = ""
     var timestamp: TimeInterval = 0
     var type: String = ""
     var ref: DatabaseReference?
-    var replies: [Comment] = []
+    var position: Int = 0
     
-    init (snapshot: DataSnapshot) {
+    var allIds: [Int] {
+        var allIds = [id]
+        allIds.append(contentsOf: replies.compactMap { $0.id })
+        return allIds
+    }
+    
+    convenience init(snapshot: DataSnapshot) {
         let data = snapshot.value as? NSDictionary ?? [:]
         
-        by = data["by"] as? String ?? ""
-        id = data["id"] as? Int ?? 0
-        kids = data["kids"] as? [Int] ?? []
-        parent = data["parent"] as? Int ?? 0
-        text = data["text"] as? String ?? ""
-        timestamp = data["time"] as? TimeInterval ?? 0
-        type = data["type"] as? String ?? ""
+        self.init()
         
-        ref = snapshot.ref
+        self.by = data["by"] as? String ?? ""
+        self.id = data["id"] as? Int ?? 0
+        self.text = data["text"] as? String ?? ""
+        self.timestamp = data["time"] as? TimeInterval ?? 0
+        self.type = data["type"] as? String ?? ""
+        self.parent = data["parent"] as? Int
+        
+        if let kids = data["kids"] as? [Int] {
+            for kid in kids {
+                let reply = Comment()
+                
+                reply.parent = self.id
+                reply.id = kid
+                
+                self.replies.append(reply)
+            }
+        }
+        
+        self.ref = snapshot.ref
+    }
+
+    var description: String {
+        return "\(id): \(replies.count) replies, parent: \(parent)"
+    }
+    
+    func add(reply: Comment) {
+        replies.append(reply)
+        reply.parent = id
+    }
+    
+    func search(value: Int) -> Comment? {
+        if value == id { return self }
+        
+        for reply in replies {
+            if let found = reply.search(value: id) {
+                return found
+            }
+        }
+        
+        return nil
+    }
+    
+    var postedAt: String {
+        let date = Date(timeIntervalSince1970: timestamp)
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.locale = NSLocale.current
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        
+        return dateFormatter.string(from: date)
     }
 }

@@ -59,17 +59,24 @@ class StoryCell: UITableViewCell {
                 .localizedString(from: (story.points) as NSNumber, number: .decimal)
             
             let formattedCommentCount = NumberFormatter
-                .localizedString(from: (story.kids.count) as NSNumber, number: .decimal)
+                .localizedString(from: (story.comments.count) as NSNumber, number: .decimal)
+            
+            let dateFormatter = DateComponentsFormatter()
+            dateFormatter.allowedUnits = [.month, .day, .hour, .minute]
+            dateFormatter.unitsStyle = .abbreviated
+            let postedAgo = Date(timeIntervalSince1970: story.timestamp).distance(to: Date())
+            let formattedAgo = dateFormatter.string(from: postedAgo)
             
             titleLabel.attributedText = titleText
             storyTypeLabel.text = story.type
             pointsLabel.text = formattedPoints
-            postedAtLabel.text = story.postedAt
+            postedAtLabel.text = "\(String(formattedAgo!)) ago"
             postedByLabel.text = story.by
             commentsCountLabel.text = formattedCommentCount
             
             if showText == true {
                 bodyLabel.attributedText = formattedText(story.text)
+                bodyLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize - 2)
             }
         }
     }
@@ -91,16 +98,27 @@ class StoryCell: UITableViewCell {
     }
     
     func formattedText(_ text: String) -> NSAttributedString {
-        var attributedText: NSAttributedString?
+        let formattedBody = String(
+            format: "<style>body { font-family: '-apple-system', 'HelveticaNeue'; font-size: \(UIFont.systemFontSize - 2) }</style><body><span>%@</span></body>",
+            text
+        )
         
-        let formattedBody = String(format: "<style>body { font-family: '-apple-system', 'HelveticaNeue'; font-size: \(UIFont.systemFontSize) }</style><body><span>%@</span></body>", text)
-
-        attributedText = try? NSAttributedString(
+        let attributedText = try? NSMutableAttributedString(
             data: formattedBody.data(using: .utf8, allowLossyConversion: false)!,
-            options: [.documentType: NSAttributedString.DocumentType.html, .characterEncoding: String.Encoding.utf8.rawValue],
+            options: [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue,
+            ],
             documentAttributes: nil)
         
-        guard attributedText != nil else { return NSAttributedString() }
-        return attributedText!
+        let additionalAttributes: [NSAttributedString.Key: AnyObject] = [
+            .font: UIFont.preferredFont(forTextStyle: .body),
+            .foregroundColor: UIColor.label
+        ]
+        let range = NSRange(location: 0, length: attributedText?.length ?? 0)
+        
+        attributedText?.addAttributes(additionalAttributes, range: range)
+        
+        return attributedText ?? NSAttributedString()
     }
 }

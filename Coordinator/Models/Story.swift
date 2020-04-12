@@ -9,12 +9,11 @@
 import Foundation
 import FirebaseDatabase
 
-struct Story {
+class Story {
     var ref: DatabaseReference?
     var title: String = "This is an example title."
     var id: Int = 0
     var url: String = "https://www.example.com"
-    var kids: [Int] = []
     var comments: [Comment] = []
     var points: Int = 0
     var timestamp: TimeInterval = 0
@@ -28,20 +27,33 @@ struct Story {
         }
     }
     
-    init (snapshot: DataSnapshot) {
+    convenience init(snapshot: DataSnapshot) {
         let data = snapshot.value as? NSDictionary ?? [:]
         
-        title = data["title"] as? String ?? ""
-        id = data["id"] as? Int ?? 0
-        url = data["url"] as? String ?? ""
-        kids = data["kids"] as? [Int] ?? []
-        points = data["score"] as? Int ?? 0
-        timestamp = data["time"] as? TimeInterval ?? 0
-        by = data["by"] as? String ?? ""
-        type = data["type"] as? String ?? ""
-        text = data["text"] as? String ?? ""
+        self.init()
         
-        ref = snapshot.ref
+        self.title = data["title"] as? String ?? ""
+        self.id = data["id"] as? Int ?? 0
+        self.url = data["url"] as? String ?? ""
+
+        self.points = data["score"] as? Int ?? 0
+        self.timestamp = data["time"] as? TimeInterval ?? 0
+        self.by = data["by"] as? String ?? ""
+        self.type = data["type"] as? String ?? ""
+        self.text = data["text"] as? String ?? ""
+        
+        if let kids = data["kids"] as? [Int] {
+            for kid in kids {
+                let comment = Comment()
+                comment.id = kid
+                comment.story = self
+                comment.position = 0
+                
+                self.comments.append(comment)
+            }
+        }
+        
+        self.ref = snapshot.ref
     }
     
     var postedAt: String {

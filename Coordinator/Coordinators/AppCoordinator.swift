@@ -10,11 +10,18 @@ import UIKit
 import Firebase
 import SafariServices
 
+enum StoryType: String {
+    case top = "topstories"
+    case ask = "askstories"
+    case new = "newstories"
+    case best = "beststories"
+    case show = "showstories"
+    case job = "jobstories"
+}
+
 class AppCoordinator {
     private var databaseURL = "https://hacker-news.firebaseio.com/"
     private var database: DatabaseReference!
-    private var commentsGroup = DispatchGroup()
-    private var storiesGroup = DispatchGroup()
     
     var splitController: UISplitViewController?
     private var masterNavController: UINavigationController?
@@ -28,7 +35,7 @@ class AppCoordinator {
     
     func start() {
         setupFirebase()
-        startObservingDatabase(type: "askstories")
+        //startObservingDatabase(type: .top)
         
         itemsController = ItemsController()
         itemsController?.itemsDelegate = self
@@ -54,6 +61,10 @@ class AppCoordinator {
         splitController?.delegate = self
         splitController?.preferredDisplayMode = .automatic
         splitController!.viewControllers = [masterNavController!, detailNavController!]
+        
+        DispatchQueue.global(qos: .background).async {
+            self.loadInitialItems()
+        }
     }
     
     private func setupFirebase() {
@@ -63,8 +74,33 @@ class AppCoordinator {
     
     // MARK: - Network Requests
 
-    private func startObservingDatabase(type: String = "topstories") {
-        let topStoriesRef = database.child(type)
+    private func loadInitialItems(type: StoryType = .ask) {
+        let topStoriesRef = database.child(type.rawValue)
+        let itemsRef = database.child("item")
+        
+        topStoriesRef.observe(.value, with: { (snapshot) in
+            // This returns the n top story IDs
+            // Let's convert that in to an array and query for these item IDs.
+            let postIds = snapshot.value as? [Int] ?? []
+            
+            for (index, postId) in postIds.enumerated() {
+                if index >= 49 { break }
+                
+                itemsRef.child(String(postId)).observe(.value, with: { (storySnapshot) in
+                    let story = Story(snapshot: storySnapshot)
+                    
+                    DispatchQueue.main.async {
+                        self.itemsController?.addStory(story)
+                    }
+                })
+            }
+            
+            topStoriesRef.removeAllObservers()
+        })
+    }
+    
+    private func startObservingDatabase(type: StoryType = .top) {
+        let topStoriesRef = database.child(type.rawValue)
 
         topStoriesRef.observe(.childAdded, with: { (snapshot) in
             guard let storyId = snapshot.value as? Int else { return }
@@ -88,19 +124,13 @@ class AppCoordinator {
     }
     
     private func fetchComments(commentIds: [Int]) {
-        commentsGroup.enter()
-        
         for commentId in commentIds {
-            commentsGroup.enter()
             self.database.child("item").child("\(commentId)").observeSingleEvent(of: .value, with: { (commentSnapshot) in
                 let comment = Comment(snapshot: commentSnapshot)
-                self.fetchComments(commentIds: comment.kids)
+                self.fetchComments(commentIds: comment.replies.map { $0.id })
                 self.detailController?.addComment(comment)
-                self.commentsGroup.leave()
             })
         }
-        
-        commentsGroup.leave()
     }
     
     // MARK: - Cleanup
@@ -121,18 +151,12 @@ extension AppCoordinator: ItemsControllerDelegate {
     
     func loadComments(story: Story) {
         detailController?.setStory(story)
-        fetchComments(commentIds: story.kids)
+        DispatchQueue.global(qos: .background).async {
+            self.fetchComments(commentIds: story.comments.map { $0.id })
+        }
         
         if splitController?.isCollapsed == true {
             splitController?.showDetailViewController(detailController!, sender: self)
-            DispatchQueue.main.async {
-                self.detailController?.tableView.setContentOffset(.zero, animated: true)
-                self.detailController?.tableView.reloadData()
-             }
-        }
-        
-        self.commentsGroup.notify(queue: .main) {
-            self.detailController?.refreshComments()
         }
     }
 }
