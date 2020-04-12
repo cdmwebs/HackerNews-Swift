@@ -17,6 +17,7 @@ class ItemsController: UIViewController {
     weak var itemsDelegate: AppCoordinator?
     
     var stories: [Story] = []
+    var collapseDetailViewController: Bool = true
     
     private var tableView: UITableView = UITableView()
     private let cellIdentifier = "StoryCell"
@@ -94,6 +95,7 @@ extension ItemsController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let story = self.stories[indexPath.row]
+        self.collapseDetailViewController = false
         itemsDelegate?.loadComments(story: story)
     }
 }

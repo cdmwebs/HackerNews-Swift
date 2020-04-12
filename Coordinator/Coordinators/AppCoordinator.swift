@@ -59,7 +59,11 @@ class AppCoordinator {
         
         splitController = UISplitViewController()
         splitController?.delegate = self
-        splitController?.preferredDisplayMode = .automatic
+        splitController?.preferredDisplayMode = .allVisible
+        detailController?.navigationItem.leftBarButtonItem = splitController?.displayModeButtonItem
+        detailController?.navigationItem.leftItemsSupplementBackButton = true
+        splitController?.maximumPrimaryColumnWidth = CGFloat(splitController?.view.bounds.size.width ?? 250)
+        splitController?.preferredPrimaryColumnWidthFraction = 0.35
         splitController!.viewControllers = [masterNavController!, detailNavController!]
         
         DispatchQueue.global(qos: .background).async {
@@ -142,7 +146,13 @@ class AppCoordinator {
 
 extension AppCoordinator: UISplitViewControllerDelegate {
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {
-        return true
+        guard let navigationController = primaryViewController as? UINavigationController,
+            let controller = navigationController.topViewController as? ItemsController
+        else {
+            return true
+        }
+
+        return controller.collapseDetailViewController
     }
 }
 
