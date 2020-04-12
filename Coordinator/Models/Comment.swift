@@ -54,7 +54,7 @@ class Comment: CustomStringConvertible {
     }
 
     var description: String {
-        return "\(id): \(replies.count) replies, parent: \(parent)"
+        return "\(id): \(replies.count) replies, parent: \(String(describing: parent))"
     }
     
     func add(reply: Comment) {
