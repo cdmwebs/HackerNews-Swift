@@ -80,27 +80,43 @@ class AppCoordinator {
 
     private func loadInitialItems(type: StoryType = .top) {
         let topStoriesRef = database.child(type.rawValue)
-        let itemsRef = database.child("item")
         
         topStoriesRef.observe(.value, with: { (snapshot) in
             // This returns the n top story IDs
             // Let's convert that in to an array and query for these item IDs.
             let postIds = snapshot.value as? [Int] ?? []
             
-            for (index, postId) in postIds.enumerated() {
-                if index >= 49 { break }
-                
-                itemsRef.child(String(postId)).observe(.value, with: { (storySnapshot) in
-                    let story = Story(snapshot: storySnapshot)
-                    
-                    DispatchQueue.main.async {
-                        self.itemsController?.addStory(story)
-                    }
-                })
-            }
+            self.initialLoad(itemIds: postIds, completion: { (snapshots, error) in
+                for snapshot in snapshots {
+                    let story = Story(snapshot: snapshot)
+                    self.itemsController?.addStory(story)
+                }
+            })
             
             topStoriesRef.removeAllObservers()
         })
+    }
+    
+    private func initialLoad(itemIds: [Int], limit: Int = 50, completion: @escaping ([DataSnapshot], Error?) -> Void) {
+        let itemsRef = database.child("item")
+        var tempItems = [DataSnapshot]()
+        
+        let queue = DispatchGroup()
+        
+        for (index, itemId) in itemIds.enumerated() {
+            if index >= limit { break }
+            
+            queue.enter()
+            
+            itemsRef.child(String(itemId)).observeSingleEvent(of: .value, with: { (snapshot) in
+                tempItems.append(snapshot)
+                queue.leave()
+            })
+        }
+        
+        queue.notify(queue: .main) {
+            completion(tempItems, nil)
+        }
     }
     
     private func startObservingDatabase(type: StoryType = .top) {
@@ -127,13 +143,26 @@ class AppCoordinator {
         })
     }
     
-    private func fetchComments(commentIds: [Int]) {
-        for commentId in commentIds {
-            self.database.child("item").child("\(commentId)").observeSingleEvent(of: .value, with: { (commentSnapshot) in
-                let comment = Comment(snapshot: commentSnapshot)
-                self.fetchComments(commentIds: comment.replies.map { $0.id })
-                self.detailController?.addComment(comment)
-            })
+    private func fetchComments(commentIds: [Int], withInitial: Bool = true) {
+        var tempComments = [Comment]()
+        var replyIds = [Int]()
+        
+        initialLoad(itemIds: commentIds, limit: 250) { (snapshots, error) in
+            for snapshot in snapshots {
+                let comment = Comment(snapshot: snapshot)
+                replyIds.append(contentsOf: comment.replies.map({ $0.id }))
+                tempComments.append(comment)
+            }
+            
+            if withInitial {
+                self.detailController?.setComments(tempComments)
+            } else {
+                self.detailController?.addComments(tempComments)
+            }
+            
+            if replyIds.count > 0 {
+                self.fetchComments(commentIds: replyIds, withInitial: false)
+            }
         }
     }
     

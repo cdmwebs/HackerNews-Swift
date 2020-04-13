@@ -39,13 +39,38 @@ class DetailController: UIViewController {
         }
     }
     
+    func setComments(_ comments: [Comment]) {
+        self.comments.removeAll()
+        tableView.reloadData()
+        
+        for comment in comments {
+            addComment(comment)
+        }
+        
+        DispatchQueue.main.async {
+            print("reloading table data:", comments.count)
+            self.tableView.reloadData()
+        }
+    }
+    
+    func addComments(_ comments: [Comment]) {
+        for comment in comments {
+            addComment(comment)
+        }
+        
+        if comments.count > 0 {
+            print("added comments:", comments.count)
+            tableView.reloadData()
+        }
+    }
+    
     func addComment(_ comment: Comment) {
         var commentIndex: Int?
         
         if isParentComment(comment) {
             comment.position = 0
             commentIndex = comments.firstIndex(where: { $0.id == comment.id })
-            
+            story?.comments.append(comment)
             if commentIndex != nil {
                 comments[commentIndex!] = comment
             }
@@ -74,11 +99,6 @@ class DetailController: UIViewController {
                 commentIndex = comments.endIndex
                 inserted = true
             }
-        }
-        
-        DispatchQueue.main.async {
-            print("reloading table data")
-            self.tableView.reloadData()
         }
     }
     
