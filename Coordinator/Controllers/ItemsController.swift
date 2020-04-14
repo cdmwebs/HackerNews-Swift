@@ -9,7 +9,6 @@
 import UIKit
 
 protocol ItemsControllerDelegate : class {
-    func loadStory(story: Story)
     func loadComments(story: Story)
 }
 
@@ -29,31 +28,30 @@ class ItemsController: UIViewController {
         self.view.backgroundColor = .white
         
         setupTableView()
+        watchForStoryChanges()
+    }
+    
+    func watchForStoryChanges() {
+        NotificationCenter.default.addObserver(self, selector: #selector(onStoryAdd(_:)), name: .storyAdded, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onStoryAdd(_:)), name: .storyUpdated, object: nil)
+    }
+
+    @objc func onStoryAdd(_ notification:Notification) {
+        if let info = notification.userInfo as? [String:Story] {
+            for (_, story) in info {
+                addStory(story)
+            }
+        }
     }
 
     func addStory(_ story: Story) {
         if let storyIndex = stories.firstIndex(where: { $0.id == story.id }) {
             stories[storyIndex] = story
-            print("updated list:", story.title)
-            
-            tableView.beginUpdates()
             tableView.reloadRows(at: [IndexPath(row: storyIndex, section: 0)], with: .left)
-            tableView.endUpdates()
         } else {
             stories.append(story)
-            print("added to list:", story.title)
-            
-            tableView.beginUpdates()
             tableView.insertRows(at: [IndexPath(row: stories.count - 1, section: 0)], with: .automatic)
-            tableView.endUpdates()
         }
-    }
-    
-    func updateStory(_ story: Story) {
-        guard let storyIndex = self.stories.firstIndex(where: { $0.id == story.id }) else { return }
-        stories[storyIndex] = story
-        
-        tableView.reloadRows(at: [IndexPath(row: storyIndex, section: 0)], with: .automatic)
     }
     
     private func setupTableView() {
@@ -75,6 +73,11 @@ class ItemsController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .storyAdded, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .storyUpdated, object: nil)
     }
 }
 

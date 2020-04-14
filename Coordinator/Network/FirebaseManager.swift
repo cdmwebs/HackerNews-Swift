@@ -29,25 +29,29 @@ enum StoryType: String, CustomStringConvertible {
     }
 }
 
-protocol FirebaseDelegate: class {
-    func onStoryAdded(_ story: Story)
-    func onStoryUpdated(_ story: Story)
-    func onCommentAdded(_ comment: Comment)
-    func onCommentUpdated(_ comment: Comment)
-    func onInitialCommentLoad(comments: [Comment])
-}
-
 class FirebaseManager {
     private var database: Database?
     private var databaseRef: DatabaseReference?
+    private var itemRef: DatabaseReference?
+    private var commentHandles: [UInt] = []
     
     private let itemKey: String = "item"
     private var storyType: StoryType = .TopStories
     
-    weak var delegate: FirebaseDelegate?
-    
     init() {
         configureDatabase()
+        startListening()
+    }
+    
+    // MARK: - Observers
+    
+    func startListening() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(startWatchingStory(_:)),
+            name: .startWatchingStory,
+            object: nil
+        )
     }
     
     // MARK: - Network Requests
@@ -56,25 +60,8 @@ class FirebaseManager {
         database = Database.database(url: "https://hacker-news.firebaseio.com/")
         database?.isPersistenceEnabled = true
         databaseRef = database?.reference(withPath: "v0")
-    }
-    
-    func loadInitialItems(type: StoryType = .TopStories) {
-        guard let topStoriesRef = databaseRef?.child(type.rawValue) else { return }
         
-        topStoriesRef.observe(.value, with: { snapshot in
-            // This returns the n top story IDs
-            // Let's convert that in to an array and query for these item IDs.
-            let postIds = snapshot.value as? [Int] ?? []
-            
-            self.initialLoad(itemIds: postIds, completion: { snapshots, _ in
-                for snapshot in snapshots {
-                    let story = Story(snapshot: snapshot)
-                    self.delegate?.onStoryAdded(story)
-                }
-            })
-            
-            topStoriesRef.removeAllObservers()
-        })
+        itemRef = databaseRef?.child("item")
     }
     
     func initialLoad(itemIds: [Int], limit: Int = 50, completion: @escaping ([DataSnapshot], Error?) -> Void) {
@@ -99,19 +86,36 @@ class FirebaseManager {
         }
     }
     
-    func fetchComments(commentIds: [Int]) {
-        var replyIds = [Int]()
-        
-        initialLoad(itemIds: commentIds, limit: 250) { snapshots, _ in
-            for snapshot in snapshots {
-                let comment = Comment(snapshot: snapshot)
-                replyIds.append(contentsOf: comment.replies.map { $0.id })
-                self.delegate?.onCommentAdded(comment)
-            }
+    
+    @objc func startWatchingStory(_ notification:Notification) {
+        guard let dict = notification.userInfo as? [String:Story],
+            let story = dict["story"] else { return }
+
+        for handle in commentHandles {
+            itemRef?.removeObserver(withHandle: handle)
             
-            if replyIds.count > 0 {
-                self.fetchComments(commentIds: replyIds)
+            if let index = commentHandles.firstIndex(of: handle) {
+                commentHandles.remove(at: index)
             }
+        }
+        
+        for comment in story.commentTree.comments {
+            watchComment(comment)
+        }
+    }
+    
+    func watchComment(_ comment: Comment) {
+        let commentHandle = itemRef?.child("\(comment.id)").observe(.value, with: { (commentSnapshot) in
+            let comment = Comment(snapshot: commentSnapshot)
+            NotificationCenter.default.post(name: .commentAdded, object: nil, userInfo: ["comment": comment])
+            
+            for comment in comment.replies {
+                self.watchComment(comment)
+            }
+         })
+        
+        if commentHandle != nil {
+            self.commentHandles.append(commentHandle!)
         }
     }
     
@@ -126,7 +130,7 @@ class FirebaseManager {
             
             self.databaseRef?.child(self.itemKey).child(storyPath).observeSingleEvent(of: .value, with: { storySnapshot in
                 let story = Story(snapshot: storySnapshot)
-                self.delegate?.onStoryAdded(story)
+                NotificationCenter.default.post(name: .storyAdded, object: self, userInfo: ["story": story])
             })
         })
         
@@ -136,7 +140,7 @@ class FirebaseManager {
             
             self.databaseRef?.child(self.itemKey).child(storyPath).observeSingleEvent(of: .value, with: { storySnapshot in
                 let story = Story(snapshot: storySnapshot)
-                self.delegate?.onStoryUpdated(story)
+                NotificationCenter.default.post(name: .storyUpdated, object: self, userInfo: ["story": story])
             })
         })
     }
@@ -145,5 +149,14 @@ class FirebaseManager {
     
     deinit {
         databaseRef?.child(storyType.rawValue).removeAllObservers()
+        NotificationCenter.default.removeObserver(self, name: .startWatchingStory, object: nil)
     }
+}
+
+extension Notification.Name {
+    static let storyAdded = Notification.Name("storyAdded")
+    static let storyUpdated = Notification.Name("storyUpdated")
+    static let startWatchingStory = Notification.Name("startWatchingStory")
+
+    static let commentAdded = Notification.Name("commentAdded")
 }

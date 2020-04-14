@@ -19,7 +19,6 @@ class StoryCell: UITableViewCell {
     var showText: Bool = false {
         didSet {
             guard showText == true  else { return }
-            
             bodyLabel.attributedText = formattedText(story?.text ?? "")
         }
     }

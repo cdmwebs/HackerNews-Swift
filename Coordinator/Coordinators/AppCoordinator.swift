@@ -32,11 +32,7 @@ class AppCoordinator {
     }
     
     private func startListening() {
-        firebaseManager.delegate = self
-        
-        DispatchQueue.global(qos: .background).async {
-            self.firebaseManager.startObservingDatabase()
-        }
+        self.firebaseManager.startObservingDatabase()
     }
     
     private func configureDetailController() {
@@ -90,44 +86,19 @@ extension AppCoordinator: UISplitViewControllerDelegate {
 }
 
 extension AppCoordinator: ItemsControllerDelegate {
-    func loadStory(story: Story) {}
-    
     func loadComments(story: Story) {
         if detailController?.story?.id != story.id {
             detailController?.setStory(story)
             
-            DispatchQueue.global(qos: .background).async {
-                let commentIds = story.commentTree.comments.map { $0.id }
-                self.firebaseManager.fetchComments(commentIds: commentIds)
-            }
+            NotificationCenter.default.post(
+                name: .startWatchingStory,
+                object: self,
+                userInfo: ["story": story]
+            )
         }
         
         if splitController?.isCollapsed == true {
             splitController?.showDetailViewController(detailController!, sender: self)
         }
-    }
-}
-
-extension AppCoordinator: FirebaseDelegate {
-    func onStoryAdded(_ story: Story) {
-        itemsController?.addStory(story)
-    }
-
-    func onStoryUpdated(_ story: Story) {
-        itemsController?.updateStory(story)
-    }
-    
-    func onCommentAdded(_ comment: Comment) {
-        let newCommentIndex = detailController?.story?.commentTree.addComment(comment)
-        print("adding", comment.id)
-        detailController?.addComment(comment, at: newCommentIndex)
-    }
-    
-    func onCommentUpdated(_ comment: Comment) {
-        
-    }
-    
-    func onInitialCommentLoad(comments: [Comment]) {
-        // detailController?.setComments(comments)
     }
 }

@@ -31,17 +31,21 @@ class CommentTree {
         return comments[index]
     }
     
-    @discardableResult func addComment(_ comment: Comment) -> Int? {
-        guard comment.parent != nil else { return nil }
+    @discardableResult func addComment(_ comment: Comment) -> [Int?:String?] {
+        guard comment.parent != nil else { return [:] }
         let parentIndex = comments.firstIndex(where: { $0.id == comment.parent })
         var commentIndex = comments.firstIndex(where: { $0.id == comment.id })
-            
+        var action = ""
+        
         if comment.parent == storyId && commentIndex == nil {
             comment.depth = 0
             comments.append(comment)
+            action = "add"
+            commentIndex = comments.count - 1
         } else if comment.parent == storyId && commentIndex != nil {
             comments[commentIndex!] = comment
-        } else if parentIndex != nil {
+            action = "update"
+        } else if parentIndex != nil && commentIndex == nil {
             let parent = comments[parentIndex!]
             
             // Get the position of the reply
@@ -56,9 +60,13 @@ class CommentTree {
             
             comment.depth = parent.depth + 1
             comments.insert(comment, at: commentIndex!)
+            action = "add"
+        } else if commentIndex != nil {
+            comments[commentIndex!] = comment
+            action = "update"
         }
         
-        return commentIndex
+        return [commentIndex:action]
     }
     
     private func nestComments(comments: [Comment], parentId: Int, level: Int = 0) -> [Comment] {

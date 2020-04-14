@@ -18,6 +18,7 @@ class DetailController: UIViewController {
     
     override func viewDidLoad() {
         configureTableview()
+        NotificationCenter.default.addObserver(self, selector: #selector(onCommentAdded(_:)), name: .commentAdded, object: nil)
     }
     
     func configureTableview() {
@@ -37,8 +38,15 @@ class DetailController: UIViewController {
         }
     }
     
-    func addComment(_ comment: Comment, at: Int?) {
-        tableView.reloadData()
+    @objc func onCommentAdded(_ notification: Notification) {
+        guard let dict = notification.userInfo as? [String:Comment],
+            let comment = dict["comment"] else { return }
+
+            self.story?.commentTree.addComment(comment)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: .commentAdded, object: nil)
     }
 }
 
