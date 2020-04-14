@@ -19,12 +19,14 @@ class Comment: CustomStringConvertible {
     var timestamp: TimeInterval = 0
     var type: String = ""
     var ref: DatabaseReference?
-    var position: Int = 0
+    var depth: Int = 0
     
-    var allIds: [Int] {
-        var allIds = [id]
-        allIds.append(contentsOf: replies.compactMap { $0.id })
-        return allIds
+    var childIds: [Int] {
+        let replyIds = replies.reduce([]) { (result, reply) -> [Int] in
+            return result + reply.childIds
+        }
+        
+        return [id] + replyIds
     }
     
     convenience init(snapshot: DataSnapshot) {

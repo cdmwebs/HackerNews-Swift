@@ -59,7 +59,7 @@ class StoryCell: UITableViewCell {
                 .localizedString(from: (story.points) as NSNumber, number: .decimal)
             
             let formattedCommentCount = NumberFormatter
-                .localizedString(from: (story.comments.count) as NSNumber, number: .decimal)
+                .localizedString(from: (story.commentTree.comments.count) as NSNumber, number: .decimal)
             
             let dateFormatter = DateComponentsFormatter()
             dateFormatter.allowedUnits = [.month, .day, .hour, .minute]

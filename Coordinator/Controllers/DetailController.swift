@@ -13,7 +13,6 @@ class DetailController: UIViewController {
     private let headerCellIdentifier = "StoryCell"
     
     var story: Story?
-    var comments: [Comment] = []
     
     @IBOutlet var tableView: UITableView!
     
@@ -27,87 +26,19 @@ class DetailController: UIViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         
-        let headerNib = UINib.init(nibName: headerCellIdentifier, bundle: nil)
+        let headerNib = UINib(nibName: headerCellIdentifier, bundle: nil)
         tableView.register(headerNib, forCellReuseIdentifier: headerCellIdentifier)
     }
     
-    func setStory(_ story:Story) {
+    func setStory(_ story: Story) {
         if story.id != self.story?.id {
             self.story = story
-            self.comments = story.comments
-            self.tableView?.reloadData()
+            tableView?.reloadData()
         }
     }
     
-    func setComments(_ comments: [Comment]) {
-        self.comments.removeAll()
+    func addComment(_ comment: Comment, at: Int?) {
         tableView.reloadData()
-        
-        for comment in comments {
-            addComment(comment)
-        }
-        
-        DispatchQueue.main.async {
-            print("reloading table data:", comments.count)
-            self.tableView.reloadData()
-        }
-    }
-    
-    func addComments(_ comments: [Comment]) {
-        for comment in comments {
-            addComment(comment)
-        }
-        
-        if comments.count > 0 {
-            print("added comments:", comments.count)
-            tableView.reloadData()
-        }
-    }
-    
-    func addComment(_ comment: Comment) {
-        var commentIndex: Int?
-        
-        if isParentComment(comment) {
-            comment.position = 0
-            commentIndex = comments.firstIndex(where: { $0.id == comment.id })
-            story?.comments.append(comment)
-            if commentIndex != nil {
-                comments[commentIndex!] = comment
-            }
-        } else if comment.parent != nil {
-            var inserted = false
-            
-            if let parentIndex = comments.firstIndex(where: { $0.id == comment.parent }) {
-                let parent = comments[parentIndex]
-                comment.position = parent.position + 1
-                parent.add(reply: comment)
-                
-                if parentIndex < comments.count - 1 {
-                    for n in (parentIndex + 1)...(comments.count - 1) {
-                        if comments[n].position <= parent.position {
-                            comments.insert(comment, at: n)
-                            commentIndex = n
-                            inserted = true
-                            break
-                        }
-                    }
-                }
-            }
-            
-            if !inserted {
-                comments.append(comment)
-                commentIndex = comments.endIndex
-                inserted = true
-            }
-        }
-    }
-    
-    private func isParentComment(_ comment: Comment) -> Bool {
-        return story?.id == comment.parent
-    }
-    
-    private func allCommentsCount() -> Int {
-        return comments.compactMap { $0.allIds }.count
     }
 }
 
@@ -117,7 +48,7 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return section == 0 ? 1 : allCommentsCount()
+        return section == 0 ? 1 : (story?.totalCommentCount ?? 0)
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -125,10 +56,13 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, indentationLevelForRowAt indexPath: IndexPath) -> Int {
-        guard indexPath.section == 1 else { return 0 }
-        
-        let comment = comments[indexPath.row]
-        return comment.position
+        switch indexPath.section {
+            case 0: return 0
+            default:
+                guard let story = story,
+                      let comment = story.commentTree.at(index: indexPath.row) else { return 0 }
+                return comment.depth
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -137,7 +71,7 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
             guard let story = story else { return cell }
             
             cell.story = story
-            cell.commentCount = allCommentsCount()
+            cell.commentCount = story.totalCommentCount
             cell.showText = true
             cell.bodyLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
             
@@ -147,7 +81,7 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: commentCellIdentifier) ??
             UITableViewCell(style: .subtitle, reuseIdentifier: commentCellIdentifier)
         
-        let comment = comments[indexPath.row]
+        guard let comment = story?.commentTree.at(index: indexPath.row) else { return cell }
         
         let dateFormatter = DateComponentsFormatter()
         dateFormatter.allowedUnits = [.month, .day, .hour, .minute]
@@ -160,6 +94,7 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
         cell.textLabel?.numberOfLines = 0
         cell.detailTextLabel?.text = "- posted by \(String(describing: comment.by)) \(String(formattedAgo!)) ago"
         cell.indentationWidth = 20
+        
         return cell
     }
     
@@ -175,11 +110,12 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
                 .documentType: NSAttributedString.DocumentType.html,
                 .characterEncoding: String.Encoding.utf8.rawValue,
             ],
-            documentAttributes: nil)
+            documentAttributes: nil
+        )
         
         let additionalAttributes: [NSAttributedString.Key: AnyObject] = [
             .font: UIFont.preferredFont(forTextStyle: .body),
-            .foregroundColor: UIColor.label
+            .foregroundColor: UIColor.label,
         ]
         let range = NSRange(location: 0, length: attributedText?.length ?? 0)
         

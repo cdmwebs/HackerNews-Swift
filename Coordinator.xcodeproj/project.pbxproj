@@ -20,8 +20,11 @@
 		9F32A1B5243ED4DB00AFCB2B /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32A1B4243ED4DB00AFCB2B /* AppCoordinator.swift */; };
 		9F32A1BE243FFC3B00AFCB2B /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32A1BC243FFC3B00AFCB2B /* StoryCell.swift */; };
 		9F32A1BF243FFC3B00AFCB2B /* StoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F32A1BD243FFC3B00AFCB2B /* StoryCell.xib */; };
+		9F4F23992444D8BE00419A19 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4F23982444D8BE00419A19 /* FirebaseManager.swift */; };
 		9F791EE32440131200FCC44A /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F791EE22440131200FCC44A /* Comment.swift */; };
 		9F791EE5244013B000FCC44A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F791EE4244013B000FCC44A /* GoogleService-Info.plist */; };
+		9FA86CAD2446153F001C7D3C /* CommentTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CAC2446153F001C7D3C /* CommentTree.swift */; };
+		9FA86CAF24461557001C7D3C /* CommentTreeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CAE24461557001C7D3C /* CommentTreeTest.swift */; };
 		9FFAC19F2442497400FA8347 /* CommentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FFAC19E2442497400FA8347 /* CommentTest.swift */; };
 		B2F44E13BBEBA89EE74838D7 /* Pods_Coordinator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */; };
 /* End PBXBuildFile section */
@@ -56,8 +59,11 @@
 		9F32A1B4243ED4DB00AFCB2B /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		9F32A1BC243FFC3B00AFCB2B /* StoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCell.swift; sourceTree = "<group>"; };
 		9F32A1BD243FFC3B00AFCB2B /* StoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoryCell.xib; sourceTree = "<group>"; };
+		9F4F23982444D8BE00419A19 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		9F791EE22440131200FCC44A /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		9F791EE4244013B000FCC44A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		9FA86CAC2446153F001C7D3C /* CommentTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTree.swift; sourceTree = "<group>"; };
+		9FA86CAE24461557001C7D3C /* CommentTreeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTreeTest.swift; sourceTree = "<group>"; };
 		9FFAC19E2442497400FA8347 /* CommentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTest.swift; sourceTree = "<group>"; };
 		ACA04108100846332F0FF63A /* Pods-CoordinatorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoordinatorTests.debug.xcconfig"; path = "Target Support Files/Pods-CoordinatorTests/Pods-CoordinatorTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coordinator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -109,6 +115,7 @@
 			children = (
 				9F1A0F9C244248D200C694CC /* Info.plist */,
 				9FFAC19E2442497400FA8347 /* CommentTest.swift */,
+				9FA86CAE24461557001C7D3C /* CommentTreeTest.swift */,
 			);
 			path = CoordinatorTests;
 			sourceTree = "<group>";
@@ -176,6 +183,7 @@
 			children = (
 				9F32A1B1243ED45100AFCB2B /* Story.swift */,
 				9F791EE22440131200FCC44A /* Comment.swift */,
+				9FA86CAC2446153F001C7D3C /* CommentTree.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -191,6 +199,7 @@
 		9FDA973F2440117000094FDC /* Network */ = {
 			isa = PBXGroup;
 			children = (
+				9F4F23982444D8BE00419A19 /* FirebaseManager.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -367,6 +376,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9FFAC19F2442497400FA8347 /* CommentTest.swift in Sources */,
+				9FA86CAF24461557001C7D3C /* CommentTreeTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,11 +387,13 @@
 				9F32A1AB243E9B7A00AFCB2B /* ItemsController.swift in Sources */,
 				9F1A0F882440D45000C694CC /* DetailController.swift in Sources */,
 				9F791EE32440131200FCC44A /* Comment.swift in Sources */,
+				9F4F23992444D8BE00419A19 /* FirebaseManager.swift in Sources */,
 				9F32A1B5243ED4DB00AFCB2B /* AppCoordinator.swift in Sources */,
 				9F32A197243E976600AFCB2B /* AppDelegate.swift in Sources */,
 				9F32A1B2243ED45100AFCB2B /* Story.swift in Sources */,
 				9F1A0F8E24411FDA00C694CC /* CommentCell.swift in Sources */,
 				9F32A1BE243FFC3B00AFCB2B /* StoryCell.swift in Sources */,
+				9FA86CAD2446153F001C7D3C /* CommentTree.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

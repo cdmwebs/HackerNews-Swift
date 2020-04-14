@@ -14,7 +14,7 @@ class Story {
     var title: String = "This is an example title."
     var id: Int = 0
     var url: String = "https://www.example.com"
-    var comments: [Comment] = []
+    var commentTree: CommentTree = CommentTree(comments: [])
     var points: Int = 0
     var timestamp: TimeInterval = 0
     var by: String = ""
@@ -25,6 +25,10 @@ class Story {
         get {
             URL(string: url)?.host ?? ""
         }
+    }
+    
+    var totalCommentCount: Int {
+        return commentTree.comments.count
     }
     
     convenience init(snapshot: DataSnapshot) {
@@ -42,14 +46,16 @@ class Story {
         self.type = data["type"] as? String ?? ""
         self.text = data["text"] as? String ?? ""
         
+        self.commentTree.storyId = self.id
+        
         if let kids = data["kids"] as? [Int] {
             for kid in kids {
                 let comment = Comment()
                 comment.id = kid
                 comment.story = self
-                comment.position = 0
+                comment.parent = self.id
                 
-                self.comments.append(comment)
+                self.commentTree.addComment(comment)
             }
         }
         

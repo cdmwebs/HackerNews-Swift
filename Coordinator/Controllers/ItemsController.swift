@@ -30,25 +30,22 @@ class ItemsController: UIViewController {
         
         setupTableView()
     }
-    
-    func setStories(stories: [Story]) {
-        self.stories = stories
-        tableView.reloadData()
-    }
-    
+
     func addStory(_ story: Story) {
         if let storyIndex = stories.firstIndex(where: { $0.id == story.id }) {
             stories[storyIndex] = story
-            print("updated:", story.title)
-            tableView.performBatchUpdates({
-                tableView.reloadRows(at: [IndexPath(row: storyIndex, section: 0)], with: .left)
-            }, completion: nil)
+            print("updated list:", story.title)
+            
+            tableView.beginUpdates()
+            tableView.reloadRows(at: [IndexPath(row: storyIndex, section: 0)], with: .left)
+            tableView.endUpdates()
         } else {
             stories.append(story)
-            print("added:", story.title)
-            tableView.performBatchUpdates({
-                tableView.insertRows(at: [IndexPath(row: stories.count - 1, section: 0)], with: .automatic)
-            }, completion: nil)
+            print("added to list:", story.title)
+            
+            tableView.beginUpdates()
+            tableView.insertRows(at: [IndexPath(row: stories.count - 1, section: 0)], with: .automatic)
+            tableView.endUpdates()
         }
     }
     
