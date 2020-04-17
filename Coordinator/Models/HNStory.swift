@@ -48,15 +48,11 @@ class HNStory: HNItem {
             var commentIndex = allComments.firstIndex(where: { $0.id == comment.id })
             
             if parentIndex != nil && commentIndex == nil {
-                let replies = allComments.filter { $0.parent == comment.parent }
+                let siblingIndex = allComments.firstIndex { $0.parent == comment.parent }
                 
-                // Get the position of the reply
-                let offset = replies.firstIndex(where: { $0.id == comment.id })
-                
-                if offset != nil {
-                    commentIndex = parentIndex! + 1
+                if siblingIndex != nil {
+                    commentIndex = siblingIndex! + 1
                 } else {
-                    // Couldn't find it
                     commentIndex = parentIndex! + 1
                 }
                 
