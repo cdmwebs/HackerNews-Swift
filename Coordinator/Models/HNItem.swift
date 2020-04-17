@@ -77,7 +77,7 @@ class HNItem: Decodable {
             documentAttributes: nil)
         
         let additionalAttributes: [NSAttributedString.Key: AnyObject] = [
-            .font: UIFont.preferredFont(forTextStyle: .body),
+            .font: UIFont.systemFont(ofSize: 14),
             .foregroundColor: UIColor.label
         ]
         
