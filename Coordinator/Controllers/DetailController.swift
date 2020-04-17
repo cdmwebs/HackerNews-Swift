@@ -97,14 +97,10 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: headerCellIdentifier) as! StoryCell
             guard let story = story else { return cell }
-            
-            cell.story = story
-            cell.commentCount = story.descendants ?? 0
             cell.showText = true
-            cell.bodyLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
             cell.onLinkTapped = self.handleURL
             cell.titleLabel.isUserInteractionEnabled = true
-            
+            cell.story = story
             return cell
         default:
             if isLoadingComments {

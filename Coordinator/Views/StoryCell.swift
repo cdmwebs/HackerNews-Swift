@@ -9,12 +9,7 @@
 import UIKit
 
 class StoryCell: UITableViewCell {
-    var showText: Bool = false {
-        didSet {
-            guard showText == true else { return }
-            bodyLabel.attributedText = story?.labelText
-        }
-    }
+    var showText: Bool = false
     
     var commentCount: Int = 0 {
         didSet {
@@ -60,9 +55,12 @@ class StoryCell: UITableViewCell {
             postedByLabel.text = story.by
             commentsCountLabel.text = formattedCommentCount
             
-            if showText == true {
+            if showText {
                 bodyLabel.attributedText = story.labelText
-                bodyLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize - 2)
+                topConstraint.constant = 20
+                titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+            } else {
+                bodyLabel.text = ""
             }
         }
     }
@@ -74,6 +72,7 @@ class StoryCell: UITableViewCell {
     @IBOutlet weak var postedAtLabel: UILabel!
     @IBOutlet weak var postedByLabel: UILabel!
     @IBOutlet weak var commentsCountLabel: UILabel!
+    @IBOutlet weak var topConstraint: NSLayoutConstraint!
     
     var onLinkTapped: ((_ url: URL) -> Void)?
     
