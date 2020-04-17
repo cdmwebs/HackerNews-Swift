@@ -41,8 +41,6 @@ class ItemsController: UIViewController {
         } else {
             tableView.reloadData()
         }
-        
-        
     }
     
     @objc func reloadData() {

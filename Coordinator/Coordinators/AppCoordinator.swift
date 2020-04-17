@@ -105,6 +105,7 @@ extension AppCoordinator: ItemsControllerDelegate {
     func loadComments(story: HNStory) {
         if detailController?.story?.id != story.id {
             detailController?.setStory(story)
+            
             DispatchQueue.global().async {
                 self.firebaseManager?.loadComments(item: story, story: story)
             }
