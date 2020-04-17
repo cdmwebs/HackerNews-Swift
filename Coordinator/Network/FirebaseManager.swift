@@ -21,6 +21,7 @@ class FirebaseManager {
     private var databaseRef: DatabaseReference?
     private var itemRef: DatabaseReference?
     private var commentHandles: [UInt] = []
+    private let decoder = JSONDecoder()
     
     private let itemKey: String = "item"
     private var storyType: HNStoryType = .TopStories
@@ -57,12 +58,11 @@ class FirebaseManager {
         DispatchQueue.global().async {
             let storiesRef = self.databaseRef?.child(type.rawValue)
             let query = storiesRef?.queryLimited(toFirst: limit)
-            let decoder = JSONDecoder()
             let group = DispatchGroup()
             
             let itemHandler = { (itemSnapshot: DataSnapshot) -> Void in
                 guard let data = itemSnapshot.data else { return }
-                let story = try! decoder.decode(HNStory.self, from: data)
+                let story = try! self.decoder.decode(HNStory.self, from: data)
                 self.addStory(story)
                 group.leave()
             }
@@ -86,11 +86,10 @@ class FirebaseManager {
     
     func loadComments(item: HNItem, story: HNStory, depth: Int = 0, group: DispatchGroup = DispatchGroup()) {
         let itemRef = self.databaseRef?.child(self.itemKey)
-        let decoder = JSONDecoder()
         
         let commentHandler = { (commentSnapshot: DataSnapshot) -> Void in
             guard let data = commentSnapshot.data else { return }
-            let comment = try! decoder.decode(HNComment.self, from: data)
+            let comment = try! self.decoder.decode(HNComment.self, from: data)
             story.addComment(comment, depth: depth)
             
             if (comment.kids?.count ?? 0) > 0 {
