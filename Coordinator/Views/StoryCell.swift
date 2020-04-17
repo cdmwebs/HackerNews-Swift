@@ -19,7 +19,7 @@ class StoryCell: UITableViewCell {
     var showText: Bool = false {
         didSet {
             guard showText == true else { return }
-            bodyLabel.attributedText = story?.formattedText
+            bodyLabel.attributedText = story?.labelText
         }
     }
     
@@ -68,7 +68,7 @@ class StoryCell: UITableViewCell {
             commentsCountLabel.text = formattedCommentCount
             
             if showText == true {
-                bodyLabel.attributedText = story.formattedText
+                bodyLabel.attributedText = story.labelText
                 bodyLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize - 2)
             }
         }

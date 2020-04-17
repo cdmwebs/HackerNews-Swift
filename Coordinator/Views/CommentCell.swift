@@ -19,7 +19,7 @@ class CommentCell: UITableViewCell {
         didSet {
             guard let comment = comment else { return }
             
-            commentLabel.attributedText = comment.formattedText
+            commentLabel.attributedText = comment.labelText
             timeLabel.text = comment.formattedAgo
             parentLabel.text = comment.by
         }

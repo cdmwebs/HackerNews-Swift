@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftSoup
 import UIKit
 
 class HNItem: Decodable {
@@ -35,25 +36,40 @@ class HNItem: Decodable {
         }
     }
     
-    var formattedText: NSAttributedString {
-        guard text != nil else { return NSAttributedString() }
+    var escapedText: String {
+        guard let text = text else { return "" }
         
-        let html = """
-        <style>
-            body {
-                font-family: '-apple-system', 'HelveticaNeue';
-                font-size: \(UIFont.systemFontSize - 2)
-            }
-        </style>
-        <body>
-            <span>%@</span>
-        </body>
-        """
+        do {
+            
+            let unescapedText = try Entities.unescape(text)
+            return unescapedText
+        } catch Exception.Error(let type, let message) {
+            print(type, message)
+        } catch {
+            print(error)
+        }
         
-        let formattedBody = String(format: html, text!)
+        return ""
+    }
+    
+    var formattedHTML: String {
+        do {
+            let textWithOpeningParagraph = "<p>\(escapedText)"
+            let doc: Document = try SwiftSoup.parseBodyFragment(textWithOpeningParagraph)
+            let html = try doc.html()
+            return html
+        } catch Exception.Error(let type, let message) {
+            print(type, message)
+        } catch {
+            print(error)
+        }
         
+        return ""
+    }
+    
+    var labelText: NSAttributedString {
         let attributedText = try? NSMutableAttributedString(
-            data: formattedBody.data(using: .utf8, allowLossyConversion: false)!,
+            data: formattedHTML.data(using: .utf8, allowLossyConversion: false)!,
             options: [
                 .documentType: NSAttributedString.DocumentType.html,
                 .characterEncoding: String.Encoding.utf8.rawValue,
@@ -64,8 +80,8 @@ class HNItem: Decodable {
             .font: UIFont.preferredFont(forTextStyle: .body),
             .foregroundColor: UIColor.label
         ]
-        let range = NSRange(location: 0, length: attributedText?.length ?? 0)
         
+        let range = NSRange(location: 0, length: attributedText?.length ?? 0)
         attributedText?.addAttributes(additionalAttributes, range: range)
         
         return attributedText ?? NSAttributedString()

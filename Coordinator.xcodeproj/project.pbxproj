@@ -26,6 +26,7 @@
 		9FA86CB924493150001C7D3C /* HNComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CB824493150001C7D3C /* HNComment.swift */; };
 		9FA86CBB24493163001C7D3C /* HNStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBA24493163001C7D3C /* HNStory.swift */; };
 		9FA86CBD24493178001C7D3C /* HNItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBC24493178001C7D3C /* HNItem.swift */; };
+		9FA86CC02449515B001C7D3C /* TextFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBF2449515B001C7D3C /* TextFormat.swift */; };
 		B2F44E13BBEBA89EE74838D7 /* Pods_Coordinator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */; };
 /* End PBXBuildFile section */
 
@@ -65,6 +66,8 @@
 		9FA86CB824493150001C7D3C /* HNComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNComment.swift; sourceTree = "<group>"; };
 		9FA86CBA24493163001C7D3C /* HNStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNStory.swift; sourceTree = "<group>"; };
 		9FA86CBC24493178001C7D3C /* HNItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNItem.swift; sourceTree = "<group>"; };
+		9FA86CBE2449515B001C7D3C /* CoordinatorTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoordinatorTests-Bridging-Header.h"; sourceTree = "<group>"; };
+		9FA86CBF2449515B001C7D3C /* TextFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFormat.swift; sourceTree = "<group>"; };
 		ACA04108100846332F0FF63A /* Pods-CoordinatorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoordinatorTests.debug.xcconfig"; path = "Target Support Files/Pods-CoordinatorTests/Pods-CoordinatorTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coordinator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F44B142E4BB60F5BBF0D704D /* Pods-Coordinator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coordinator.release.xcconfig"; path = "Target Support Files/Pods-Coordinator/Pods-Coordinator.release.xcconfig"; sourceTree = "<group>"; };
@@ -114,6 +117,8 @@
 			isa = PBXGroup;
 			children = (
 				9F1A0F9C244248D200C694CC /* Info.plist */,
+				9FA86CBF2449515B001C7D3C /* TextFormat.swift */,
+				9FA86CBE2449515B001C7D3C /* CoordinatorTests-Bridging-Header.h */,
 			);
 			path = CoordinatorTests;
 			sourceTree = "<group>";
@@ -257,6 +262,7 @@
 				TargetAttributes = {
 					9F1A0F97244248D200C694CC = {
 						CreatedOnToolsVersion = 11.4;
+						LastSwiftMigration = 1140;
 						TestTargetID = 9F32A192243E976600AFCB2B;
 					};
 					9F32A192243E976600AFCB2B = {
@@ -376,6 +382,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FA86CC02449515B001C7D3C /* TextFormat.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +431,7 @@
 			baseConfigurationReference = ACA04108100846332F0FF63A /* Pods-CoordinatorTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = S2FGQ6RHC4;
 				INFOPLIST_FILE = CoordinatorTests/Info.plist;
@@ -434,6 +442,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.kdhq.Coordinator.CoordinatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CoordinatorTests/CoordinatorTests-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Coordinator.app/Coordinator";
@@ -445,6 +455,7 @@
 			baseConfigurationReference = 61B7699FC050479063E107C8 /* Pods-CoordinatorTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = S2FGQ6RHC4;
 				INFOPLIST_FILE = CoordinatorTests/Info.plist;
@@ -455,6 +466,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = dev.kdhq.Coordinator.CoordinatorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "CoordinatorTests/CoordinatorTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Coordinator.app/Coordinator";
