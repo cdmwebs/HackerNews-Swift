@@ -10,18 +10,35 @@ import UIKit
 
 class CommentCell: UITableViewCell {
     @IBOutlet weak var parentLabel: UILabel!
-    @IBOutlet weak var commentLabel: UILabel!
+    @IBOutlet weak var commentText: UITextView!
     @IBOutlet weak var timeLabel: UILabel!
     
     @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
+    
+    var onLinkTapped: ((_ url: URL) -> Void)?
     
     var comment: HNComment? {
         didSet {
             guard let comment = comment else { return }
             
-            commentLabel.attributedText = comment.labelText
+            commentText.attributedText = comment.labelText
             timeLabel.text = comment.formattedAgo
             parentLabel.text = comment.by
         }
+    }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        commentText.textContainer.lineFragmentPadding = 0
+        commentText.textContainerInset = .zero
+        commentText.delegate = self
+    }
+}
+
+extension CommentCell: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
+        self.onLinkTapped?(URL)
+        return false
     }
 }

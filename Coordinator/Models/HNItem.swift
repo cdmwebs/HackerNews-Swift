@@ -12,7 +12,7 @@ import UIKit
 
 class HNItem: Decodable {
     var id: Int
-    var url: String?
+    var url: URL?
     var kids: [Int]?
     var descendants: Int?
     var time: TimeInterval

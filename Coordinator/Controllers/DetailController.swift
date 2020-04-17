@@ -6,6 +6,7 @@
 //  Copyright © 2020 Known Decimal. All rights reserved.
 //
 
+import SafariServices
 import UIKit
 
 class DetailController: UIViewController {
@@ -101,6 +102,8 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
             cell.commentCount = story.descendants ?? 0
             cell.showText = true
             cell.bodyLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize)
+            cell.onLinkTapped = self.handleURL
+            cell.titleLabel.isUserInteractionEnabled = true
             
             return cell
         default:
@@ -113,8 +116,16 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
                 guard let comment = story?.comments[indexPath.row] else { return cell }
                 
                 cell.comment = comment
+                cell.onLinkTapped = self.handleURL
                 return cell
             }
         }
+    }
+}
+
+extension DetailController {
+    func handleURL(_ url: URL) {
+        let webViewController = SFSafariViewController.init(url: url)
+        self.present(webViewController, animated: true, completion: nil)
     }
 }

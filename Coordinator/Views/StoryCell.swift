@@ -8,14 +8,7 @@
 
 import UIKit
 
-protocol StoryCellDelegate : class {
-    func storyTapped(story: HNStory)
-    func commentsTapped(story: HNStory)
-}
-
 class StoryCell: UITableViewCell {
-    var delegate: StoryCellDelegate?
-    
     var showText: Bool = false {
         didSet {
             guard showText == true else { return }
@@ -82,11 +75,18 @@ class StoryCell: UITableViewCell {
     @IBOutlet weak var postedByLabel: UILabel!
     @IBOutlet weak var commentsCountLabel: UILabel!
     
-    @objc func storyTapped(sender: Any?) {
-        delegate?.storyTapped(story: story!)
+    var onLinkTapped: ((_ url: URL) -> Void)?
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+        let tapOnTitleGesture = UITapGestureRecognizer(target: self, action: #selector(titleWasTapped(_:)))
+        titleLabel.addGestureRecognizer(tapOnTitleGesture)
+        titleLabel.isUserInteractionEnabled = false
     }
     
-    @objc func commentsTapped(sender: Any?) {
-        delegate?.commentsTapped(story: story!)
+    @objc func titleWasTapped(_ sender: UIGestureRecognizer) {
+        guard let url = story?.url else { return }
+        onLinkTapped?(url)
     }
 }

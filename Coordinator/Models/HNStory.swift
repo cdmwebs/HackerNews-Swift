@@ -36,8 +36,7 @@ class HNStory: HNItem {
     }
     
     var domain: String {
-        guard url != nil else { return "" }
-        return URL(string: url!)?.host ?? ""
+        return url?.host ?? ""
     }
     
     func addComment(_ comment: HNComment, depth: Int? = 1) {
