@@ -109,10 +109,15 @@ extension DetailController: UITableViewDataSource, UITableViewDelegate {
                 return cell
             } else {
                 let cell = tableView.dequeueReusableCell(withIdentifier: commentCellIdentifier) as! CommentCell
-                guard let comment = story?.comments[indexPath.row] else { return cell }
+                let commentFound = story?.comments.indices.contains(indexPath.row) ?? false
                 
-                cell.comment = comment
-                cell.onLinkTapped = self.handleURL
+                if commentFound {
+                    guard let comment = story?.comments[indexPath.row] else { return cell }
+                    
+                    cell.comment = comment
+                    cell.onLinkTapped = self.handleURL
+                }
+                
                 return cell
             }
         }
