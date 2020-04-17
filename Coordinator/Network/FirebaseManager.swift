@@ -29,6 +29,16 @@ class FirebaseManager {
         configureDatabase()
     }
     
+    private func addStory(_ story:HNStory) {
+        if let storyIndex = self.stories.firstIndex(where: { $0.id == story.id }) {
+            let existingComments = self.stories[storyIndex].comments
+            self.stories[storyIndex] = story
+            self.stories[storyIndex].comments = existingComments
+        } else {
+            self.stories.append(story)
+        }
+    }
+    
     // MARK: - Observers
     
     func loadStories(type: HNStoryType = .TopStories, limit:UInt = 50, start:UInt = 0) {
@@ -41,7 +51,7 @@ class FirebaseManager {
             let itemHandler = { (itemSnapshot: DataSnapshot) -> Void in
                 guard let data = itemSnapshot.data else { return }
                 let story = try! decoder.decode(HNStory.self, from: data)
-                self.stories.append(story)
+                self.addStory(story)
                 group.leave()
             }
             
