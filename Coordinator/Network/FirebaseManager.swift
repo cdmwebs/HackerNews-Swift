@@ -29,6 +29,18 @@ class FirebaseManager {
         configureDatabase()
     }
     
+    // MARK: - Configuration
+    
+    private func configureDatabase() {
+        database = Database.database(url: "https://hacker-news.firebaseio.com/")
+        database?.isPersistenceEnabled = true
+        databaseRef = database?.reference(withPath: "v0")
+        
+        itemRef = databaseRef?.child(itemKey)
+    }
+    
+    // MARK: - Storage
+    
     private func addStory(_ story:HNStory) {
         if let storyIndex = self.stories.firstIndex(where: { $0.id == story.id }) {
             let existingComments = self.stories[storyIndex].comments
@@ -102,39 +114,7 @@ class FirebaseManager {
             NotificationCenter.default.post(name: .commentAdded, object: self)
         }
     }
-    
-    // MARK: - Network Requests
-    
-    private func configureDatabase() {
-        database = Database.database(url: "https://hacker-news.firebaseio.com/")
-        database?.isPersistenceEnabled = true
-        databaseRef = database?.reference(withPath: "v0")
-        
-        itemRef = databaseRef?.child(itemKey)
-    }
-    
-    func initialLoad(itemIds: [Int], limit: Int = 50, completion: @escaping ([DataSnapshot], Error?) -> Void) {
-        guard let itemsRef = databaseRef?.child(itemKey) else { return }
-        var tempItems = [DataSnapshot]()
-        
-        let queue = DispatchGroup()
-        
-        for (index, itemId) in itemIds.enumerated() {
-            if index >= limit { break }
-            
-            queue.enter()
-            
-            itemsRef.child(String(itemId)).observeSingleEvent(of: .value, with: { snapshot in
-                tempItems.append(snapshot)
-                queue.leave()
-            })
-        }
-        
-        queue.notify(queue: .main) {
-            completion(tempItems, nil)
-        }
-    }
-    
+
     // MARK: - Cleanup
     
     deinit {
