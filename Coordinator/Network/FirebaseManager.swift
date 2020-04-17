@@ -43,9 +43,9 @@ class FirebaseManager {
     
     private func addStory(_ story:HNStory) {
         if let storyIndex = self.stories.firstIndex(where: { $0.id == story.id }) {
-            let existingComments = self.stories[storyIndex].comments
+            let existingComments = self.stories[storyIndex].allComments
             self.stories[storyIndex] = story
-            self.stories[storyIndex].comments = existingComments
+            self.stories[storyIndex].allComments = existingComments
         } else {
             self.stories.append(story)
         }

@@ -29,7 +29,11 @@ enum HNStoryType: String, CustomStringConvertible {
 }
 
 class HNStory: HNItem {
-    var comments: [HNComment] = []
+    var allComments: [HNComment] = []
+    
+    var comments: [HNComment] {
+        allComments.filter { $0.isDeleted == false }
+    }
     
     var domain: String {
         guard url != nil else { return "" }
@@ -39,13 +43,13 @@ class HNStory: HNItem {
     func addComment(_ comment: HNComment, depth: Int? = 1) {
         if comment.parent == id {
             // This is a root level comment
-            comments.append(comment)
+            allComments.append(comment)
         } else {
-            let parentIndex = comments.firstIndex(where: { $0.id == comment.parent })
-            var commentIndex = comments.firstIndex(where: { $0.id == comment.id })
+            let parentIndex = allComments.firstIndex(where: { $0.id == comment.parent })
+            var commentIndex = allComments.firstIndex(where: { $0.id == comment.id })
             
             if parentIndex != nil && commentIndex == nil {
-                let replies = comments.filter { $0.parent == comment.parent }
+                let replies = allComments.filter { $0.parent == comment.parent }
                 
                 // Get the position of the reply
                 let offset = replies.firstIndex(where: { $0.id == comment.id })
@@ -58,11 +62,11 @@ class HNStory: HNItem {
                 }
                 
                 comment.depth = depth ?? 0
-                comments.insert(comment, at: commentIndex!)
+                allComments.insert(comment, at: commentIndex!)
             } else if commentIndex != nil {
-                comments[commentIndex!] = comment
+                allComments[commentIndex!] = comment
             } else if parentIndex == nil {
-                comments.append(comment)
+                allComments.append(comment)
             } else {
                 print("not added")
             }

@@ -12,6 +12,10 @@ class HNComment: HNItem {
     var depth: Int = 0
     var parent: Int = 0
     
+    var isDeleted: Bool {
+        return by == nil
+    }
+    
     private enum CodingKeys: String, CodingKey { case parent }
     
     required init(from decoder: Decoder) throws {
