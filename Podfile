@@ -1,12 +1,12 @@
 # platform :ios, '9.0'
 
-target 'Coordinator' do
+target 'Read HN' do
   use_frameworks!
 
   pod 'Firebase/Database'
   pod 'SwiftSoup'
 
-  target 'CoordinatorTests' do
+  target 'Read HNTests' do
     inherit! :search_paths
   end
 end

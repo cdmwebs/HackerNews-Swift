@@ -49,12 +49,12 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-Coordinator.xcscheme</key>
+		<key>Pods-Read HN.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>Pods-CoordinatorTests.xcscheme</key>
+		<key>Pods-Read HNTests.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
