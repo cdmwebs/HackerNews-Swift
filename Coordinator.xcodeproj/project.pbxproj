@@ -16,16 +16,16 @@
 		9F32A1A0243E976A00AFCB2B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F32A19F243E976A00AFCB2B /* Assets.xcassets */; };
 		9F32A1A3243E976A00AFCB2B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9F32A1A1243E976A00AFCB2B /* LaunchScreen.storyboard */; };
 		9F32A1AB243E9B7A00AFCB2B /* ItemsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32A1AA243E9B7A00AFCB2B /* ItemsController.swift */; };
-		9F32A1B2243ED45100AFCB2B /* Story.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32A1B1243ED45100AFCB2B /* Story.swift */; };
 		9F32A1B5243ED4DB00AFCB2B /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32A1B4243ED4DB00AFCB2B /* AppCoordinator.swift */; };
 		9F32A1BE243FFC3B00AFCB2B /* StoryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F32A1BC243FFC3B00AFCB2B /* StoryCell.swift */; };
 		9F32A1BF243FFC3B00AFCB2B /* StoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9F32A1BD243FFC3B00AFCB2B /* StoryCell.xib */; };
 		9F4F23992444D8BE00419A19 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F4F23982444D8BE00419A19 /* FirebaseManager.swift */; };
-		9F791EE32440131200FCC44A /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F791EE22440131200FCC44A /* Comment.swift */; };
 		9F791EE5244013B000FCC44A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 9F791EE4244013B000FCC44A /* GoogleService-Info.plist */; };
-		9FA86CAD2446153F001C7D3C /* CommentTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CAC2446153F001C7D3C /* CommentTree.swift */; };
-		9FA86CAF24461557001C7D3C /* CommentTreeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CAE24461557001C7D3C /* CommentTreeTest.swift */; };
-		9FFAC19F2442497400FA8347 /* CommentTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FFAC19E2442497400FA8347 /* CommentTest.swift */; };
+		9FA86CB62449193E001C7D3C /* LoadingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CB42449193E001C7D3C /* LoadingCell.swift */; };
+		9FA86CB72449193E001C7D3C /* LoadingCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9FA86CB52449193E001C7D3C /* LoadingCell.xib */; };
+		9FA86CB924493150001C7D3C /* HNComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CB824493150001C7D3C /* HNComment.swift */; };
+		9FA86CBB24493163001C7D3C /* HNStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBA24493163001C7D3C /* HNStory.swift */; };
+		9FA86CBD24493178001C7D3C /* HNItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBC24493178001C7D3C /* HNItem.swift */; };
 		B2F44E13BBEBA89EE74838D7 /* Pods_Coordinator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */; };
 /* End PBXBuildFile section */
 
@@ -55,16 +55,16 @@
 		9F32A1A2243E976A00AFCB2B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9F32A1A4243E976A00AFCB2B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F32A1AA243E9B7A00AFCB2B /* ItemsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsController.swift; sourceTree = "<group>"; };
-		9F32A1B1243ED45100AFCB2B /* Story.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Story.swift; sourceTree = "<group>"; };
 		9F32A1B4243ED4DB00AFCB2B /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		9F32A1BC243FFC3B00AFCB2B /* StoryCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryCell.swift; sourceTree = "<group>"; };
 		9F32A1BD243FFC3B00AFCB2B /* StoryCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StoryCell.xib; sourceTree = "<group>"; };
 		9F4F23982444D8BE00419A19 /* FirebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
-		9F791EE22440131200FCC44A /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		9F791EE4244013B000FCC44A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		9FA86CAC2446153F001C7D3C /* CommentTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTree.swift; sourceTree = "<group>"; };
-		9FA86CAE24461557001C7D3C /* CommentTreeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTreeTest.swift; sourceTree = "<group>"; };
-		9FFAC19E2442497400FA8347 /* CommentTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentTest.swift; sourceTree = "<group>"; };
+		9FA86CB42449193E001C7D3C /* LoadingCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingCell.swift; sourceTree = "<group>"; };
+		9FA86CB52449193E001C7D3C /* LoadingCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LoadingCell.xib; sourceTree = "<group>"; };
+		9FA86CB824493150001C7D3C /* HNComment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNComment.swift; sourceTree = "<group>"; };
+		9FA86CBA24493163001C7D3C /* HNStory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNStory.swift; sourceTree = "<group>"; };
+		9FA86CBC24493178001C7D3C /* HNItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNItem.swift; sourceTree = "<group>"; };
 		ACA04108100846332F0FF63A /* Pods-CoordinatorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoordinatorTests.debug.xcconfig"; path = "Target Support Files/Pods-CoordinatorTests/Pods-CoordinatorTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coordinator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F44B142E4BB60F5BBF0D704D /* Pods-Coordinator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coordinator.release.xcconfig"; path = "Target Support Files/Pods-Coordinator/Pods-Coordinator.release.xcconfig"; sourceTree = "<group>"; };
@@ -114,8 +114,6 @@
 			isa = PBXGroup;
 			children = (
 				9F1A0F9C244248D200C694CC /* Info.plist */,
-				9FFAC19E2442497400FA8347 /* CommentTest.swift */,
-				9FA86CAE24461557001C7D3C /* CommentTreeTest.swift */,
 			);
 			path = CoordinatorTests;
 			sourceTree = "<group>";
@@ -174,6 +172,8 @@
 				9F32A1BD243FFC3B00AFCB2B /* StoryCell.xib */,
 				9F1A0F8C24411FDA00C694CC /* CommentCell.swift */,
 				9F1A0F8D24411FDA00C694CC /* CommentCell.xib */,
+				9FA86CB42449193E001C7D3C /* LoadingCell.swift */,
+				9FA86CB52449193E001C7D3C /* LoadingCell.xib */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -181,9 +181,9 @@
 		9F32A1B0243ED44600AFCB2B /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				9F32A1B1243ED45100AFCB2B /* Story.swift */,
-				9F791EE22440131200FCC44A /* Comment.swift */,
-				9FA86CAC2446153F001C7D3C /* CommentTree.swift */,
+				9FA86CB824493150001C7D3C /* HNComment.swift */,
+				9FA86CBA24493163001C7D3C /* HNStory.swift */,
+				9FA86CBC24493178001C7D3C /* HNItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -295,6 +295,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FA86CB72449193E001C7D3C /* LoadingCell.xib in Resources */,
 				9F32A1A3243E976A00AFCB2B /* LaunchScreen.storyboard in Resources */,
 				9F791EE5244013B000FCC44A /* GoogleService-Info.plist in Resources */,
 				9F32A1BF243FFC3B00AFCB2B /* StoryCell.xib in Resources */,
@@ -375,8 +376,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9FFAC19F2442497400FA8347 /* CommentTest.swift in Sources */,
-				9FA86CAF24461557001C7D3C /* CommentTreeTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -386,14 +385,15 @@
 			files = (
 				9F32A1AB243E9B7A00AFCB2B /* ItemsController.swift in Sources */,
 				9F1A0F882440D45000C694CC /* DetailController.swift in Sources */,
-				9F791EE32440131200FCC44A /* Comment.swift in Sources */,
+				9FA86CBB24493163001C7D3C /* HNStory.swift in Sources */,
 				9F4F23992444D8BE00419A19 /* FirebaseManager.swift in Sources */,
 				9F32A1B5243ED4DB00AFCB2B /* AppCoordinator.swift in Sources */,
+				9FA86CB62449193E001C7D3C /* LoadingCell.swift in Sources */,
 				9F32A197243E976600AFCB2B /* AppDelegate.swift in Sources */,
-				9F32A1B2243ED45100AFCB2B /* Story.swift in Sources */,
+				9FA86CBD24493178001C7D3C /* HNItem.swift in Sources */,
+				9FA86CB924493150001C7D3C /* HNComment.swift in Sources */,
 				9F1A0F8E24411FDA00C694CC /* CommentCell.swift in Sources */,
 				9F32A1BE243FFC3B00AFCB2B /* StoryCell.swift in Sources */,
-				9FA86CAD2446153F001C7D3C /* CommentTree.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

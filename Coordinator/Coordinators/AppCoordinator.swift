@@ -10,8 +10,7 @@ import SafariServices
 import UIKit
 
 class AppCoordinator {
-    private let firebaseManager = FirebaseManager()
-    private var storyType: StoryType = .AskHN
+    private var storyType: HNStoryType = .TopStories
     
     var splitController: UISplitViewController?
     
@@ -20,19 +19,20 @@ class AppCoordinator {
     private var detailNavController: UINavigationController?
     private var detailController: DetailController?
     private var collapseDetailViewController: Bool = true
+    private var firebaseManager: FirebaseManager?
     
     let barTintColor: UIColor = UIColor(red: 1.0, green: 0.4, blue: 0, alpha: 1.0)
     let barTextColor: UIColor = .white
     
     func start() {
-        startListening()
+        firebaseManager = FirebaseManager()
+        DispatchQueue.global().async {
+            self.firebaseManager?.loadStories(type: self.storyType)
+        }
+        
         configureDetailController()
         configureMasterController()
         configureSplitViewController()
-    }
-    
-    private func startListening() {
-        self.firebaseManager.startObservingDatabase()
     }
     
     private func configureDetailController() {
@@ -50,6 +50,7 @@ class AppCoordinator {
     private func configureMasterController() {
         itemsController = ItemsController()
         itemsController?.itemsDelegate = self
+        itemsController?.dataSource = firebaseManager
         
         masterNavController = UINavigationController(rootViewController: itemsController!)
         masterNavController?.navigationBar.barTintColor = barTintColor
@@ -86,15 +87,12 @@ extension AppCoordinator: UISplitViewControllerDelegate {
 }
 
 extension AppCoordinator: ItemsControllerDelegate {
-    func loadComments(story: Story) {
+    func loadComments(story: HNStory) {
         if detailController?.story?.id != story.id {
             detailController?.setStory(story)
-            
-            NotificationCenter.default.post(
-                name: .startWatchingStory,
-                object: self,
-                userInfo: ["story": story]
-            )
+            DispatchQueue.global().async {
+                self.firebaseManager?.loadComments(item: story, story: story)
+            }
         }
         
         if splitController?.isCollapsed == true {

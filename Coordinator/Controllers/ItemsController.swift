@@ -9,17 +9,18 @@
 import UIKit
 
 protocol ItemsControllerDelegate : class {
-    func loadComments(story: Story)
+    func loadComments(story: HNStory)
 }
 
 class ItemsController: UIViewController {
     weak var itemsDelegate: AppCoordinator?
     
-    var stories: [Story] = []
+    var dataSource: FirebaseManager?
     var collapseDetailViewController: Bool = true
     
     private var tableView: UITableView = UITableView()
     private let cellIdentifier = "StoryCell"
+    private let refreshControl = UIRefreshControl()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,32 +29,25 @@ class ItemsController: UIViewController {
         self.view.backgroundColor = .white
         
         setupTableView()
-        watchForStoryChanges()
+        NotificationCenter.default.addObserver(self, selector: #selector(addStory), name: .storyAdded, object: nil)
     }
     
-    func watchForStoryChanges() {
-        NotificationCenter.default.addObserver(self, selector: #selector(onStoryAdd(_:)), name: .storyAdded, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onStoryAdd(_:)), name: .storyUpdated, object: nil)
-    }
-
-    @objc func onStoryAdd(_ notification:Notification) {
-        if let info = notification.userInfo as? [String:Story] {
-            for (_, story) in info {
-                addStory(story)
-            }
-        }
-    }
-
-    func addStory(_ story: Story) {
-        if let storyIndex = stories.firstIndex(where: { $0.id == story.id }) {
-            stories[storyIndex] = story
-            tableView.reloadRows(at: [IndexPath(row: storyIndex, section: 0)], with: .left)
+    @objc func addStory(notification: NSNotification) {
+        if let story = notification.userInfo as? [String:Int] {
+            let storyId = story["storyId"]
+            let storyIndex = dataSource?.stories.firstIndex { $0.id == storyId }
+            
+            tableView.insertRows(at: [IndexPath(row: storyIndex!, section: 0)], with: .automatic)
         } else {
-            stories.append(story)
-            tableView.insertRows(at: [IndexPath(row: stories.count - 1, section: 0)], with: .automatic)
+            tableView.reloadData()
         }
     }
     
+    @objc func reloadData() {
+        tableView.reloadData()
+        refreshControl.endRefreshing()
+    }
+
     private func setupTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.delegate = self
@@ -61,6 +55,9 @@ class ItemsController: UIViewController {
         tableView.allowsSelection = true
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
+        
+        refreshControl.addTarget(self, action: #selector(reloadData), for: .valueChanged)
+        tableView.refreshControl = refreshControl
         
         let nib = UINib.init(nibName: cellIdentifier, bundle: nil)
         tableView.register(nib, forCellReuseIdentifier: cellIdentifier)
@@ -77,7 +74,6 @@ class ItemsController: UIViewController {
     
     deinit {
         NotificationCenter.default.removeObserver(self, name: .storyAdded, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .storyUpdated, object: nil)
     }
 }
 
@@ -85,17 +81,20 @@ extension ItemsController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let rowNumber = indexPath.row
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath) as! StoryCell
-        cell.story = stories[rowNumber]
+        
+        cell.story = dataSource?.stories[rowNumber]
+        
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.stories.count
+        return dataSource?.stories.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let story = self.stories[indexPath.row]
-        self.collapseDetailViewController = false
-        itemsDelegate?.loadComments(story: story)
+        if let story = dataSource?.stories[indexPath.row] {
+            itemsDelegate?.loadComments(story: story)
+            self.collapseDetailViewController = false
+        }
     }
 }

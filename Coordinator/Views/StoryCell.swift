@@ -9,8 +9,8 @@
 import UIKit
 
 protocol StoryCellDelegate : class {
-    func storyTapped(story: Story)
-    func commentsTapped(story: Story)
+    func storyTapped(story: HNStory)
+    func commentsTapped(story: HNStory)
 }
 
 class StoryCell: UITableViewCell {
@@ -18,8 +18,8 @@ class StoryCell: UITableViewCell {
     
     var showText: Bool = false {
         didSet {
-            guard showText == true  else { return }
-            bodyLabel.attributedText = formattedText(story?.text ?? "")
+            guard showText == true else { return }
+            bodyLabel.attributedText = story?.formattedText
         }
     }
     
@@ -40,7 +40,7 @@ class StoryCell: UITableViewCell {
             NSAttributedString.Key.foregroundColor: UIColor.systemGray2
         ]
         
-        let title = NSMutableAttributedString(string: story.title)
+        let title = NSMutableAttributedString(string: story.title ?? "")
         
         if !story.domain.isEmpty {
             let domain = NSAttributedString(string: " (\(story.domain))", attributes: quietAttributes)
@@ -50,31 +50,25 @@ class StoryCell: UITableViewCell {
         return title
     }
     
-    var story: Story? {
+    var story: HNStory? {
         didSet {
             guard let story = story else { return }
 
             let formattedPoints = NumberFormatter
-                .localizedString(from: (story.points) as NSNumber, number: .decimal)
+                .localizedString(from: (story.score ?? 0) as NSNumber, number: .decimal)
             
             let formattedCommentCount = NumberFormatter
-                .localizedString(from: (story.commentTree.comments.count) as NSNumber, number: .decimal)
-            
-            let dateFormatter = DateComponentsFormatter()
-            dateFormatter.allowedUnits = [.month, .day, .hour, .minute]
-            dateFormatter.unitsStyle = .abbreviated
-            let postedAgo = Date(timeIntervalSince1970: story.timestamp).distance(to: Date())
-            let formattedAgo = dateFormatter.string(from: postedAgo)
-            
+                .localizedString(from: (story.descendants ?? 0) as NSNumber, number: .decimal)
+
             titleLabel.attributedText = titleText
             storyTypeLabel.text = story.type
             pointsLabel.text = formattedPoints
-            postedAtLabel.text = "\(String(formattedAgo!)) ago"
+            postedAtLabel.text = story.formattedAgo
             postedByLabel.text = story.by
             commentsCountLabel.text = formattedCommentCount
             
             if showText == true {
-                bodyLabel.attributedText = formattedText(story.text)
+                bodyLabel.attributedText = story.formattedText
                 bodyLabel.font = UIFont.systemFont(ofSize: UIFont.systemFontSize - 2)
             }
         }
@@ -94,30 +88,5 @@ class StoryCell: UITableViewCell {
     
     @objc func commentsTapped(sender: Any?) {
         delegate?.commentsTapped(story: story!)
-    }
-    
-    func formattedText(_ text: String) -> NSAttributedString {
-        let formattedBody = String(
-            format: "<style>body { font-family: '-apple-system', 'HelveticaNeue'; font-size: \(UIFont.systemFontSize - 2) }</style><body><span>%@</span></body>",
-            text
-        )
-        
-        let attributedText = try? NSMutableAttributedString(
-            data: formattedBody.data(using: .utf8, allowLossyConversion: false)!,
-            options: [
-                .documentType: NSAttributedString.DocumentType.html,
-                .characterEncoding: String.Encoding.utf8.rawValue,
-            ],
-            documentAttributes: nil)
-        
-        let additionalAttributes: [NSAttributedString.Key: AnyObject] = [
-            .font: UIFont.preferredFont(forTextStyle: .body),
-            .foregroundColor: UIColor.label
-        ]
-        let range = NSRange(location: 0, length: attributedText?.length ?? 0)
-        
-        attributedText?.addAttributes(additionalAttributes, range: range)
-        
-        return attributedText ?? NSAttributedString()
     }
 }

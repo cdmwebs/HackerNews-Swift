@@ -6,52 +6,91 @@
 //  Copyright © 2020 Known Decimal. All rights reserved.
 //
 
-import Firebase
+import FirebaseDatabase
 import Foundation
 
-enum StoryType: String, CustomStringConvertible {
-    case TopStories = "topstories"
-    case AskHN = "askstories"
-    case NewStories = "newstories"
-    case BestStories = "beststories"
-    case ShowHN = "showstories"
-    case Jobs = "jobstories"
-    
-    var description: String {
-        switch self {
-        case .TopStories: return "Top Stories"
-        case .AskHN: return "Ask HN"
-        case .NewStories: return "New Stories"
-        case .BestStories: return "Best Stories"
-        case .ShowHN: return "Show HN"
-        case .Jobs: return "Jobs"
-        }
-    }
+extension Notification.Name {
+    static let storyAdded = Notification.Name("storyAdded")
+    static let commentAdded = Notification.Name("commentAdded")
 }
 
 class FirebaseManager {
+    var stories: [HNStory] = []
+    
     private var database: Database?
     private var databaseRef: DatabaseReference?
     private var itemRef: DatabaseReference?
     private var commentHandles: [UInt] = []
     
     private let itemKey: String = "item"
-    private var storyType: StoryType = .TopStories
+    private var storyType: HNStoryType = .TopStories
     
-    init() {
+    init() {        
         configureDatabase()
-        startListening()
     }
     
     // MARK: - Observers
     
-    func startListening() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(startWatchingStory(_:)),
-            name: .startWatchingStory,
-            object: nil
-        )
+    func loadStories(type: HNStoryType = .TopStories, limit:UInt = 50, start:UInt = 0) {
+        DispatchQueue.global().async {
+            let storiesRef = self.databaseRef?.child(type.rawValue)
+            let query = storiesRef?.queryLimited(toFirst: limit)
+            let decoder = JSONDecoder()
+            let group = DispatchGroup()
+            
+            let itemHandler = { (itemSnapshot: DataSnapshot) -> Void in
+                guard let data = itemSnapshot.data else { return }
+                let story = try! decoder.decode(HNStory.self, from: data)
+                self.stories.append(story)
+                group.leave()
+            }
+            
+            query?.observe(.value, with: { itemsSnapshot in
+                let itemIds = itemsSnapshot.value as! [Int]
+                
+                for itemId in itemIds {
+                    group.enter()
+                    let itemPath = String(itemId)
+                    
+                    self.itemRef?.child(itemPath).observeSingleEvent(of: .value, with: itemHandler)
+                }
+                
+                group.notify(queue: .main) {
+                    NotificationCenter.default.post(name: .storyAdded, object: self)
+                }
+            })
+        }
+    }
+    
+    func loadComments(item: HNItem, story: HNStory, depth: Int = 0, group: DispatchGroup = DispatchGroup()) {
+        let itemRef = self.databaseRef?.child(self.itemKey)
+        let decoder = JSONDecoder()
+        
+        let commentHandler = { (commentSnapshot: DataSnapshot) -> Void in
+            guard let data = commentSnapshot.data else { return }
+            let comment = try! decoder.decode(HNComment.self, from: data)
+            story.addComment(comment, depth: depth)
+            
+            if (comment.kids?.count ?? 0) > 0 {
+                self.loadComments(item: comment, story: story, depth: depth + 1, group: group)
+            }
+            
+            group.leave()
+        }
+        
+        if item.kids != nil {
+            for itemId in item.kids! {
+                group.enter()
+                let itemPath = String(itemId)
+                let query = itemRef?.child(itemPath)
+                
+                query?.observeSingleEvent(of: .value, with: commentHandler)
+            }
+        }
+        
+        group.notify(queue: .main) {
+            NotificationCenter.default.post(name: .commentAdded, object: self)
+        }
     }
     
     // MARK: - Network Requests
@@ -61,7 +100,7 @@ class FirebaseManager {
         database?.isPersistenceEnabled = true
         databaseRef = database?.reference(withPath: "v0")
         
-        itemRef = databaseRef?.child("item")
+        itemRef = databaseRef?.child(itemKey)
     }
     
     func initialLoad(itemIds: [Int], limit: Int = 50, completion: @escaping ([DataSnapshot], Error?) -> Void) {
@@ -86,77 +125,26 @@ class FirebaseManager {
         }
     }
     
-    
-    @objc func startWatchingStory(_ notification:Notification) {
-        guard let dict = notification.userInfo as? [String:Story],
-            let story = dict["story"] else { return }
-
-        for handle in commentHandles {
-            itemRef?.removeObserver(withHandle: handle)
-            
-            if let index = commentHandles.firstIndex(of: handle) {
-                commentHandles.remove(at: index)
-            }
-        }
-        
-        for comment in story.commentTree.comments {
-            watchComment(comment)
-        }
-    }
-    
-    func watchComment(_ comment: Comment) {
-        let commentHandle = itemRef?.child("\(comment.id)").observe(.value, with: { (commentSnapshot) in
-            let comment = Comment(snapshot: commentSnapshot)
-            NotificationCenter.default.post(name: .commentAdded, object: nil, userInfo: ["comment": comment])
-            
-            for comment in comment.replies {
-                self.watchComment(comment)
-            }
-         })
-        
-        if commentHandle != nil {
-            self.commentHandles.append(commentHandle!)
-        }
-    }
-    
-    // MARK: - Pending
-    
-    func startObservingDatabase(type: StoryType = .TopStories) {
-        guard let topStoriesRef: DatabaseReference = databaseRef?.child(type.rawValue) else { return }
-        
-        topStoriesRef.queryLimited(toFirst: 50).observe(.childAdded, with: { snapshot in
-            guard let storyId = snapshot.value as? Int else { return }
-            let storyPath = String(storyId)
-            
-            self.databaseRef?.child(self.itemKey).child(storyPath).observeSingleEvent(of: .value, with: { storySnapshot in
-                let story = Story(snapshot: storySnapshot)
-                NotificationCenter.default.post(name: .storyAdded, object: self, userInfo: ["story": story])
-            })
-        })
-        
-        topStoriesRef.queryLimited(toFirst: 50).observe(.childChanged, with: { snapshot in
-            guard let storyId = snapshot.value as? Int else { return }
-            let storyPath = String(storyId)
-            
-            self.databaseRef?.child(self.itemKey).child(storyPath).observeSingleEvent(of: .value, with: { storySnapshot in
-                let story = Story(snapshot: storySnapshot)
-                NotificationCenter.default.post(name: .storyUpdated, object: self, userInfo: ["story": story])
-            })
-        })
-    }
-    
     // MARK: - Cleanup
     
     deinit {
         databaseRef?.child(storyType.rawValue).removeAllObservers()
-        NotificationCenter.default.removeObserver(self, name: .startWatchingStory, object: nil)
     }
 }
 
-extension Notification.Name {
-    static let storyAdded = Notification.Name("storyAdded")
-    static let storyUpdated = Notification.Name("storyUpdated")
-    static let startWatchingStory = Notification.Name("startWatchingStory")
+extension DataSnapshot {
+    var data: Data? {
+        guard let value = value, !(value is NSNull) else { return nil }
+        return try? JSONSerialization.data(withJSONObject: value)
+    }
+    
+    var json: String? {
+        return data?.string
+    }
+}
 
-    static let commentAdded = Notification.Name("commentAdded")
+extension Data {
+    var string: String? {
+        return String(data: self, encoding: .utf8)
+    }
 }

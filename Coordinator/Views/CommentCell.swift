@@ -11,5 +11,17 @@ import UIKit
 class CommentCell: UITableViewCell {
     @IBOutlet weak var parentLabel: UILabel!
     @IBOutlet weak var commentLabel: UILabel!
-    @IBOutlet weak var commentIdLabel: UILabel!
+    @IBOutlet weak var timeLabel: UILabel!
+    
+    @IBOutlet weak var leadingConstraint: NSLayoutConstraint!
+    
+    var comment: HNComment? {
+        didSet {
+            guard let comment = comment else { return }
+            
+            commentLabel.attributedText = comment.formattedText
+            timeLabel.text = comment.formattedAgo
+            parentLabel.text = comment.by
+        }
+    }
 }
