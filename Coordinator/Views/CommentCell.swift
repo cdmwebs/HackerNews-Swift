@@ -37,8 +37,12 @@ class CommentCell: UITableViewCell {
 }
 
 extension CommentCell: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange) -> Bool {
-        self.onLinkTapped?(URL)
-        return false
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        if interaction == .invokeDefaultAction {
+            self.onLinkTapped?(URL)
+            return false
+        } else {
+            return true
+        }
     }
 }
