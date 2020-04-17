@@ -15,7 +15,7 @@ extension Notification.Name {
 }
 
 class FirebaseManager {
-    var stories: [HNStory] = []
+    var allStories: [HNStory] = []
     
     private var database: Database?
     private var databaseRef: DatabaseReference?
@@ -24,7 +24,13 @@ class FirebaseManager {
     private let decoder = JSONDecoder()
     
     private let itemKey: String = "item"
-    private var storyType: HNStoryType = .TopStories
+    var storyType: HNStoryType = .TopStories
+    
+    var stories: [HNStory] {
+        get {
+            allStories.filter { $0.storyType == storyType }
+        }
+    }
     
     init() {        
         configureDatabase()
@@ -43,12 +49,12 @@ class FirebaseManager {
     // MARK: - Storage
     
     private func addStory(_ story:HNStory) {
-        if let storyIndex = self.stories.firstIndex(where: { $0.id == story.id }) {
-            let existingComments = self.stories[storyIndex].allComments
-            self.stories[storyIndex] = story
-            self.stories[storyIndex].allComments = existingComments
+        if let storyIndex = self.allStories.firstIndex(where: { $0.id == story.id }) {
+            let existingComments = self.allStories[storyIndex].allComments
+            self.allStories[storyIndex] = story
+            self.allStories[storyIndex].allComments = existingComments
         } else {
-            self.stories.append(story)
+            self.allStories.append(story)
         }
     }
     
@@ -63,6 +69,7 @@ class FirebaseManager {
             let itemHandler = { (itemSnapshot: DataSnapshot) -> Void in
                 guard let data = itemSnapshot.data else { return }
                 let story = try! self.decoder.decode(HNStory.self, from: data)
+                story.storyType = type
                 self.addStory(story)
                 group.leave()
             }

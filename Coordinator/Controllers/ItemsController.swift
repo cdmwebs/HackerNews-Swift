@@ -25,7 +25,7 @@ class ItemsController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "Hacker News"
+        self.title = "\(dataSource?.stories.count ?? 0) Stories"
         self.view.backgroundColor = .white
         
         setupTableView()
@@ -41,6 +41,8 @@ class ItemsController: UIViewController {
         } else {
             tableView.reloadData()
         }
+        
+        
     }
     
     @objc func reloadData() {

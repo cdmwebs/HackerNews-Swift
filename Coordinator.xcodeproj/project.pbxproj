@@ -27,6 +27,7 @@
 		9FA86CBB24493163001C7D3C /* HNStory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBA24493163001C7D3C /* HNStory.swift */; };
 		9FA86CBD24493178001C7D3C /* HNItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBC24493178001C7D3C /* HNItem.swift */; };
 		9FA86CC02449515B001C7D3C /* TextFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CBF2449515B001C7D3C /* TextFormat.swift */; };
+		9FA86CC2244A11C8001C7D3C /* ItemTypesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA86CC1244A11C8001C7D3C /* ItemTypesController.swift */; };
 		B2F44E13BBEBA89EE74838D7 /* Pods_Coordinator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */; };
 /* End PBXBuildFile section */
 
@@ -68,6 +69,7 @@
 		9FA86CBC24493178001C7D3C /* HNItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HNItem.swift; sourceTree = "<group>"; };
 		9FA86CBE2449515B001C7D3C /* CoordinatorTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CoordinatorTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		9FA86CBF2449515B001C7D3C /* TextFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFormat.swift; sourceTree = "<group>"; };
+		9FA86CC1244A11C8001C7D3C /* ItemTypesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemTypesController.swift; sourceTree = "<group>"; };
 		ACA04108100846332F0FF63A /* Pods-CoordinatorTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-CoordinatorTests.debug.xcconfig"; path = "Target Support Files/Pods-CoordinatorTests/Pods-CoordinatorTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EB8B81A97E6896D896F2EBBF /* Pods_Coordinator.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Coordinator.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F44B142E4BB60F5BBF0D704D /* Pods-Coordinator.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Coordinator.release.xcconfig"; path = "Target Support Files/Pods-Coordinator/Pods-Coordinator.release.xcconfig"; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 				9F32A1AA243E9B7A00AFCB2B /* ItemsController.swift */,
 				9F1A0F862440D45000C694CC /* DetailController.swift */,
 				9F1A0F872440D45000C694CC /* DetailController.xib */,
+				9FA86CC1244A11C8001C7D3C /* ItemTypesController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -398,6 +401,7 @@
 				9FA86CB62449193E001C7D3C /* LoadingCell.swift in Sources */,
 				9F32A197243E976600AFCB2B /* AppDelegate.swift in Sources */,
 				9FA86CBD24493178001C7D3C /* HNItem.swift in Sources */,
+				9FA86CC2244A11C8001C7D3C /* ItemTypesController.swift in Sources */,
 				9FA86CB924493150001C7D3C /* HNComment.swift in Sources */,
 				9F1A0F8E24411FDA00C694CC /* CommentCell.swift in Sources */,
 				9F32A1BE243FFC3B00AFCB2B /* StoryCell.swift in Sources */,

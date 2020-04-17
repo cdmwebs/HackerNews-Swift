@@ -35,6 +35,18 @@ class AppCoordinator {
         configureSplitViewController()
     }
     
+    func navigateToStories(ofType: HNStoryType) {
+        self.storyType = ofType
+        
+        DispatchQueue.global().async {
+            self.firebaseManager?.storyType = ofType
+            self.firebaseManager?.loadStories(type: ofType)
+        }
+        
+        itemsController?.reloadData()
+        masterNavController?.pushViewController(itemsController!, animated: true)
+    }
+    
     private func configureDetailController() {
         detailController = DetailController()
         detailController?.title = "Detail"
@@ -48,11 +60,14 @@ class AppCoordinator {
     }
     
     private func configureMasterController() {
+        let itemTypesController = ItemTypesController()
+        itemTypesController.delegate = self
+        
         itemsController = ItemsController()
         itemsController?.itemsDelegate = self
         itemsController?.dataSource = firebaseManager
         
-        masterNavController = UINavigationController(rootViewController: itemsController!)
+        masterNavController = UINavigationController(rootViewController: itemTypesController)
         masterNavController?.navigationBar.barTintColor = barTintColor
         masterNavController?.navigationBar.tintColor = barTextColor
         masterNavController?.navigationBar.titleTextAttributes = [
@@ -98,5 +113,11 @@ extension AppCoordinator: ItemsControllerDelegate {
         if splitController?.isCollapsed == true {
             splitController?.showDetailViewController(detailController!, sender: self)
         }
+    }
+}
+
+extension AppCoordinator: ItemTypesControllerDelegate {
+    func storyTypeWasSelected(_ storyType: HNStoryType) {
+        navigateToStories(ofType: storyType)
     }
 }

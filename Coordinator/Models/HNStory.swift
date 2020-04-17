@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum HNStoryType: String, CustomStringConvertible {
+enum HNStoryType: String, CaseIterable, CustomStringConvertible {
     case TopStories = "topstories"
     case AskHN = "askstories"
     case NewStories = "newstories"
@@ -29,6 +29,7 @@ enum HNStoryType: String, CustomStringConvertible {
 }
 
 class HNStory: HNItem {
+    var storyType: HNStoryType = .TopStories
     var allComments: [HNComment] = []
     
     var comments: [HNComment] {
